@@ -16,13 +16,13 @@
 		B11552FB1FCFA796008FCE5C /* myARDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FA1FCFA796008FCE5C /* myARDelegate.swift */; };
 		B11552FD1FCFAD5F008FCE5C /* myGLDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */; };
 		B11552FF1FCFB3F2008FCE5C /* FusionBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */; };
+		B11553011FCFCE0D008FCE5C /* myGLRTT.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553001FCFCE0D008FCE5C /* myGLRTT.swift */; };
 		B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97091FCB196B00AB1001 /* myGLKView.swift */; };
 		B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97511FCBBEC900AB1001 /* myGLProgram.swift */; };
 		B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */ = {isa = PBXBuildFile; fileRef = B14B97541FCBDD0900AB1001 /* myGenVertices.c */; };
 		B14B97591FCBE79100AB1001 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = B14B97581FCBE79100AB1001 /* Shader.vsh */; };
 		B14B975B1FCBE89C00AB1001 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B14B975A1FCBE89C00AB1001 /* Shader.fsh */; };
 		B14B97611FCBF74000AB1001 /* AR-Bridging-Header.h in Resources */ = {isa = PBXBuildFile; fileRef = B14B97561FCBE4EC00AB1001 /* AR-Bridging-Header.h */; };
-		B14B97631FCC030800AB1001 /* myGLController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97621FCC030800AB1001 /* myGLController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +37,7 @@
 		B11552FA1FCFA796008FCE5C /* myARDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myARDelegate.swift; sourceTree = "<group>"; };
 		B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLDelegate.swift; sourceTree = "<group>"; };
 		B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionBrain.swift; sourceTree = "<group>"; };
+		B11553001FCFCE0D008FCE5C /* myGLRTT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLRTT.swift; sourceTree = "<group>"; };
 		B14B97091FCB196B00AB1001 /* myGLKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLKView.swift; sourceTree = "<group>"; };
 		B14B97511FCBBEC900AB1001 /* myGLProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLProgram.swift; sourceTree = "<group>"; };
 		B14B97531FCBDCDF00AB1001 /* myGenVertices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = myGenVertices.h; sourceTree = "<group>"; };
@@ -44,7 +45,6 @@
 		B14B97561FCBE4EC00AB1001 /* AR-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-Bridging-Header.h"; sourceTree = "<group>"; };
 		B14B97581FCBE79100AB1001 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		B14B975A1FCBE89C00AB1001 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
-		B14B97621FCC030800AB1001 /* myGLController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,8 +82,8 @@
 				B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */,
 				B11552FA1FCFA796008FCE5C /* myARDelegate.swift */,
 				B14B97091FCB196B00AB1001 /* myGLKView.swift */,
+				B11553001FCFCE0D008FCE5C /* myGLRTT.swift */,
 				B14B97511FCBBEC900AB1001 /* myGLProgram.swift */,
-				B14B97621FCC030800AB1001 /* myGLController.swift */,
 				B1069A7E1FCAEB8B00604E8B /* Main.storyboard */,
 				B1069A781FCAEB8B00604E8B /* AppDelegate.swift */,
 				B1069A7A1FCAEB8B00604E8B /* art.scnassets */,
@@ -176,8 +176,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B14B97631FCC030800AB1001 /* myGLController.swift in Sources */,
 				B11552FD1FCFAD5F008FCE5C /* myGLDelegate.swift in Sources */,
+				B11553011FCFCE0D008FCE5C /* myGLRTT.swift in Sources */,
 				B11552FF1FCFB3F2008FCE5C /* FusionBrain.swift in Sources */,
 				B11552FB1FCFA796008FCE5C /* myARDelegate.swift in Sources */,
 				B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */,

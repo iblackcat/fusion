@@ -7,3 +7,19 @@
 //
 
 import Foundation
+
+class FusionFrame {
+    
+}
+
+class FusionBrain: NSObject{
+    
+    override init() {
+        
+    }
+    
+    func ewFrame(frame: FusionFrame) {
+    
+    }
+    
+}

@@ -8,6 +8,7 @@
 
 import UIKit
 import GLKit
+import CoreGraphics
 
 class myGLKView: GLKView, GLKViewDelegate {
 
@@ -40,6 +41,10 @@ class myGLKView: GLKView, GLKViewDelegate {
     var testTexture: GLKTextureInfo? = nil
     //var texture: VKGLTexture?
     
+    var _rtt: myGLRTT!
+    
+    var anUIImage: UIImage!
+    
     override init(frame: CGRect) {
         
         super.init(frame: frame)
@@ -53,12 +58,14 @@ class myGLKView: GLKView, GLKViewDelegate {
         self.configureUniform()
         self.configureDisplayLink()
         
+        _rtt = myGLRTT.init(width: GLsizei(240*UIScreen.main.scale), height: GLsizei(180*UIScreen.main.scale), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        
+        render_to_fbo()
     }
     
     required init?(coder aDecoder: NSCoder) {
         
         super.init(coder: aDecoder)
-        
         //glkDelegate = myGLController.init(coder: aDecoder)
         
         self.configureGLKView()
@@ -68,11 +75,112 @@ class myGLKView: GLKView, GLKViewDelegate {
         self.configureUniform()
         self.configureDisplayLink()
         
+        _rtt = myGLRTT.init(width: GLsizei(240*UIScreen.main.scale), height: GLsizei(180*UIScreen.main.scale), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        
+        render_to_fbo()
     }
     
     
     internal func glkView(_ view: GLKView, drawIn rect: CGRect) {
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+    }
+    
+    func render_to_fbo() {
+        glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+        glClearColor(1.0, 0.0, 0.0, 1.0)
+        
+        glViewport(0, 0, GLsizei(240*UIScreen.main.scale), GLsizei(180*UIScreen.main.scale))
+        _rtt.bind()
+        
+        glUniform1i(GLint(program!.uniformIndex(uniformName: "tex")), 0)
+        glBindTexture(GLenum(GL_TEXTURE_2D), texture)
+        
+        glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
+        
+        _rtt.unbind_to_lastfbo()
+        
+        let byteLength = Int(_rtt._width * _rtt._height)
+        //var bytes: UnsafeMutableRawPointer? = malloc(byteLength*2)
+        var bytes = [UInt32](repeating: 0, count: Int(byteLength))
+        //print("byte:", bytes.)
+        
+        //glPixelStorei(GLuint(GL_PACK_ALIGNMENT), 4)
+        //glBindTexture(GLenum(GL_TEXTURE_2D), _rtt._texture)
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _rtt._framebuffer)
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(_rtt._format), GLenum(_rtt._type), &bytes)
+        print("read pixels result:", glGetError())
+        print("bytes:",bytes[0], bytes[1], bytes[2])
+        
+        getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+    
+        if anUIImage == nil {
+            fatalError("image = nil")
+        }
+        /*
+        let pixelData: UnsafePointer = (UnsafeRawPointer(bytes)?.assumingMemoryBound(to: UInt8.self))!
+        let cfdata: CFData = CFDataCreate(kCFAllocatorDefault, pixelData, byteLength * MemoryLayout<GLubyte>.size)
+        
+        let provider: CGDataProvider! = CGDataProvider(data: cfdata)
+        let colorspace = CGColorSpaceCreateDeviceRGB()
+        let iref: CGImage? = CGImage(width: Int(_rtt._width), height: Int(_rtt._height), bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: Int(_rtt._width)*4, space: colorspace, bitmapInfo: CGBitmapInfo.byteOrder32Big, provider: provider, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
+        
+        UIGraphicsBeginImageContext(CGSize(width: CGFloat(_rtt._width), height: CGFloat(_rtt._height)))
+        let cgcontext: CGContext? = UIGraphicsGetCurrentContext()
+        cgcontext!.setBlendMode(CGBlendMode.copy)
+        cgcontext!.draw(iref!, in: CGRect(x: CGFloat(0.0), y: CGFloat(0.0), width: CGFloat(_rtt._width), height: CGFloat(_rtt._height)))
+        
+        
+        
+        anUIImage = UIGraphicsGetImageFromCurrentImageContext()
+        
+        
+        
+        if anUIImage == nil {
+            fatalError("image = nil")
+        }
+        UIGraphicsEndImageContext()
+ 
+        */
+        
+        
+        /*
+        if bytes == nil {
+            fatalError("get pixel failure")
+        }
+        
+        let releaseData: CGDataProviderReleaseDataCallback = {(info: UnsafeMutableRawPointer?, data: UnsafeRawPointer, size: Int) -> () in
+            return
+        }
+        let dataProvider: CGDataProvider? = CGDataProvider(dataInfo: nil, data: bytes!, size: byteLength, releaseData: releaseData)
+        
+        if dataProvider == nil {
+            fatalError("data provider equal to nil")
+        }
+        
+        let colorspace = CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo: CGBitmapInfo = [.byteOrder32Little, CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue)]
+        
+        let aCGImage = CGImage.init(width: Int(_rtt._width), height: Int(_rtt._height), bitsPerComponent: 8, bitsPerPixel: 4, bytesPerRow: Int(4*_rtt._width), space: colorspace, bitmapInfo: bitmapInfo, provider: dataProvider!, decode: nil, shouldInterpolate: false, intent: CGColorRenderingIntent.defaultIntent)
+        if aCGImage == nil {
+            fatalError("cg image create failure")
+        }
+        
+        anUIImage = UIImage.init(cgImage: aCGImage!)
+        */
+    }
+    
+    
+    func getUIImagefromRGBABuffer(src_buffer: UnsafeMutableRawPointer, width: Int, height: Int) {
+        var colorSpace: CGColorSpace?
+        var alphaInfo: CGImageAlphaInfo!
+        var bmcontext: CGContext?
+        colorSpace = CGColorSpaceCreateDeviceRGB()
+        alphaInfo = .noneSkipLast
+        
+        bmcontext = CGContext(data: src_buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: colorSpace!, bitmapInfo: alphaInfo.rawValue)!
+        let rgbImage: CGImage? = bmcontext!.makeImage()
+        anUIImage = UIImage(cgImage: rgbImage!)
+        
     }
     
     override func draw(_ rect: CGRect) {
@@ -92,14 +200,14 @@ class myGLKView: GLKView, GLKViewDelegate {
         
         
         glUniform1i(GLint(program!.uniformIndex(uniformName: "tex")), 0)
-        glBindTexture(GLenum(GL_TEXTURE_2D), texture)
+        //glBindTexture(GLenum(GL_TEXTURE_2D), texture)
+        glBindTexture(GLenum(GL_TEXTURE_2D), _rtt._texture)
         
         glViewport(0, 0, GLsizei(rect.width*UIScreen.main.scale), GLsizei(rect.height*UIScreen.main.scale))
             
             //glUniformMatrix4fv(GLint(uniform_model_view_projection_matrix), 1, GLboolean(GL_FALSE), matrix.array)
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
- 
- 
+        
         //}
         
     }
@@ -141,44 +249,6 @@ class myGLKView: GLKView, GLKViewDelegate {
         testTexture = try! GLKTextureLoader.texture(with: (UIImage(named: "texture")!.cgImage)!, options: nil)
         texture = testTexture!.name
         
-        //texture = VKGLTexture.init(context: self.context)
-        //let image = UIImage(named: "texture")
-        
-        //cgImageRef: CGImageRef
-        
-        
-        /*
-        var textureCache: CVOpenGLESTextureCache?
-         
-        let buffer = self.glkDelegate!.bufferFromImage(from: image!)
-        
-        var result: CVReturn =
-            CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, nil, self.context, nil, &textureCache)
-        
-        if result != noErr {
-            fatalError("create TextureCache failure")
-        }
-        
-        if textureCache == nil {
-            fatalError("no texture cache")
-        }
-        
-        let textureWidth: GLsizei = GLsizei(CVPixelBufferGetWidth(buffer!))
-        let textureHeight: GLsizei = GLsizei(CVPixelBufferGetHeight(buffer!))
-        
-        glActiveTexture(GLenum(GL_TEXTURE0))
-        
-        
-        result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, textureCache!, buffer!, nil, GLenum(GL_TEXTURE_2D), GL_RED_EXT, textureWidth, textureHeight, GLenum(GL_RED_EXT), GLenum(GL_UNSIGNED_BYTE), 0, &texture)
-        
-        
-        if result != noErr {
-            fatalError("CVOpenGLESTextureCacheCreateTextureFromImage failure")
-        }
-        
-        glBindTexture(CVOpenGLESTextureGetTarget(texture!), CVOpenGLESTextureGetName(texture!))
-        */
- 
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
         glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)

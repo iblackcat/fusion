@@ -10,51 +10,23 @@ import UIKit
 import SceneKit
 import ARKit
 
-import GLKit
-
-extension Array {
-    func size() -> Int {
-        if self.count > 0 {
-            return self.count * MemoryLayout.size(ofValue: self[0])
-        }
-        return 0;
-    }
-}
-
-struct SceneVertex {
-    var positionCoords: GLKVector3
-}
-
-var vertices = [
-    SceneVertex(positionCoords: GLKVector3Make(-1.0, 1.0, 0.0)),
-    SceneVertex(positionCoords: GLKVector3Make(1.0, 1.0, 0.0)),
-    SceneVertex(positionCoords: GLKVector3Make(1.0, -1.0, 0.0)),
-    SceneVertex(positionCoords: GLKVector3Make(-1.0, -1.0, 0.0))
-]
-
-class ViewController: UIViewController {
+class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var DepthView: UIImageView!
     @IBOutlet weak var WeightView: UIImageView!
     
-    var _ARDelegate: myARDelegate!
-    
     var isPreviewStart: Bool = false
     var cubeNode: SCNNode!
     
     @IBOutlet weak var glView: myGLKView!
-    var glPlayer: myGLController!
-    //@IBOutlet weak var glTestView: myGLKView!
-    //var vertexBufferId: GLuint = GLuint()
-    //var baseEffect = GLKBaseEffect()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set the view's delegate
-        sceneView.delegate = _ARDelegate//self
-        sceneView.session.delegate = _ARDelegate//self
+        sceneView.delegate = self
+        sceneView.session.delegate = self
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
@@ -67,59 +39,24 @@ class ViewController: UIViewController {
         sceneView.scene = scene
         
         addGestures()
-        
-        //glPlayer = myGLController.init()
-        //glView.glkDelegate = glPlayer
-        //opengl es test
     }
-    /*
-    override func glkView(_ view: GLKView, drawIn rect: CGRect) {
-        baseEffect.prepareToDraw()
-        glClear(GLenum(GL_COLOR_BUFFER_BIT))
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(
-            0,
-            3,                              //坐标轴数
-            GLenum(GL_FLOAT),
-            GLboolean(UInt8(GL_FALSE)),
-            GLsizei(MemoryLayout<SceneVertex>.size),
-            nil
-        )
-        glDrawArrays(
-            GLenum(GL_TRIANGLE_FAN), //根据实际来设置样式
-            0,                       //从buffers中的第一个vertice开始
-            GLsizei(vertices.count)
-        )
-    }
-    */
+    
     //override session(_:didUpdate:) to update DepthView and WeightView every frame
-    /*
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
      
-        let weightImage = sceneView.snapshot()
-        WeightView.image = weightImage
- 
-        //
-        glTestView.bindDrawable()
-        baseEffect.prepareToDraw()
-        glClear(GLenum(GL_COLOR_BUFFER_BIT))
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(
-            0,
-            3,                              //坐标轴数
-            GLenum(GL_FLOAT),
-            GLboolean(UInt8(GL_FALSE)),
-            GLsizei(MemoryLayout<SceneVertex>.size),
-            nil
-        )
-        glDrawArrays(
-            GLenum(GL_TRIANGLE_FAN), //根据实际来设置样式
-            0,                       //从buffers中的第一个vertice开始
-            GLsizei(vertices.count)
-        )
-        glTestView.display()
+        //let weightImage = sceneView.snapshot()
+        //WeightView.image = weightImage
+        WeightView.image = glView.anUIImage
+        /*
+        guard let currentFrame = sceneView.session.currentFrame else {
+            return
+        }
+        
+        let camerapose = currentFrame.camera.transform
+        let image = currentFrame.capturedImage
+        */
     }
-    */
+    
     
     private func addGestures() {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGesture(sender:)))
@@ -149,7 +86,7 @@ class ViewController: UIViewController {
             return
         }
         
-        let edgeLength = sceneView.bounds.height / 6000
+        let edgeLength = CGFloat(0.1)
         let cube = SCNBox(width: edgeLength, height: edgeLength, length: edgeLength, chamferRadius: edgeLength/10)
     
         let edgeTexture = UIImage(named: "edgeTexture")
@@ -198,17 +135,6 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-
-    // MARK: - ARSCNViewDelegate
-    
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
