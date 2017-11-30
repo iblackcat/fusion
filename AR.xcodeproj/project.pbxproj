@@ -13,6 +13,9 @@
 		B1069A801FCAEB8B00604E8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1069A7E1FCAEB8B00604E8B /* Main.storyboard */; };
 		B1069A821FCAEB8B00604E8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1069A811FCAEB8B00604E8B /* Assets.xcassets */; };
 		B1069A851FCAEB8B00604E8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B1069A831FCAEB8B00604E8B /* LaunchScreen.storyboard */; };
+		B11552FB1FCFA796008FCE5C /* myARDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FA1FCFA796008FCE5C /* myARDelegate.swift */; };
+		B11552FD1FCFAD5F008FCE5C /* myGLDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */; };
+		B11552FF1FCFB3F2008FCE5C /* FusionBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */; };
 		B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97091FCB196B00AB1001 /* myGLKView.swift */; };
 		B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97511FCBBEC900AB1001 /* myGLProgram.swift */; };
 		B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */ = {isa = PBXBuildFile; fileRef = B14B97541FCBDD0900AB1001 /* myGenVertices.c */; };
@@ -31,6 +34,9 @@
 		B1069A811FCAEB8B00604E8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1069A841FCAEB8B00604E8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B1069A861FCAEB8B00604E8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B11552FA1FCFA796008FCE5C /* myARDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myARDelegate.swift; sourceTree = "<group>"; };
+		B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLDelegate.swift; sourceTree = "<group>"; };
+		B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionBrain.swift; sourceTree = "<group>"; };
 		B14B97091FCB196B00AB1001 /* myGLKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLKView.swift; sourceTree = "<group>"; };
 		B14B97511FCBBEC900AB1001 /* myGLProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLProgram.swift; sourceTree = "<group>"; };
 		B14B97531FCBDCDF00AB1001 /* myGenVertices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = myGenVertices.h; sourceTree = "<group>"; };
@@ -71,7 +77,10 @@
 		B1069A771FCAEB8B00604E8B /* AR */ = {
 			isa = PBXGroup;
 			children = (
+				B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */,
 				B1069A7C1FCAEB8B00604E8B /* ViewController.swift */,
+				B11552FC1FCFAD5F008FCE5C /* myGLDelegate.swift */,
+				B11552FA1FCFA796008FCE5C /* myARDelegate.swift */,
 				B14B97091FCB196B00AB1001 /* myGLKView.swift */,
 				B14B97511FCBBEC900AB1001 /* myGLProgram.swift */,
 				B14B97621FCC030800AB1001 /* myGLController.swift */,
@@ -168,6 +177,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B14B97631FCC030800AB1001 /* myGLController.swift in Sources */,
+				B11552FD1FCFAD5F008FCE5C /* myGLDelegate.swift in Sources */,
+				B11552FF1FCFB3F2008FCE5C /* FusionBrain.swift in Sources */,
+				B11552FB1FCFA796008FCE5C /* myARDelegate.swift in Sources */,
 				B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */,
 				B1069A7D1FCAEB8B00604E8B /* ViewController.swift in Sources */,
 				B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */,

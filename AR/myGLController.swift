@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-class myGLController: UIView, myGLKViewDelegate {
+class myGLController: UIView {
     
     var avPlayer: AVPlayer?
     var avPlayerItem: AVPlayerItem?
@@ -26,7 +26,7 @@ class myGLController: UIView, myGLKViewDelegate {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        
+        glClearColor(0.0, 1.0, 0.0, 1.0)
     }
     
     func dataSource() -> CVPixelBuffer? {

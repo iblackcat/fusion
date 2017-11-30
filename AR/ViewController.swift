@@ -32,11 +32,13 @@ var vertices = [
     SceneVertex(positionCoords: GLKVector3Make(-1.0, -1.0, 0.0))
 ]
 
-class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+class ViewController: UIViewController {
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var DepthView: UIImageView!
     @IBOutlet weak var WeightView: UIImageView!
+    
+    var _ARDelegate: myARDelegate!
     
     var isPreviewStart: Bool = false
     var cubeNode: SCNNode!
@@ -51,8 +53,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewDidLoad()
         
         // Set the view's delegate
-        sceneView.delegate = self
-        sceneView.session.delegate = self
+        sceneView.delegate = _ARDelegate//self
+        sceneView.session.delegate = _ARDelegate//self
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
@@ -66,8 +68,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         addGestures()
         
-        glPlayer = myGLController.init()
-        glView.glkDelegate = glPlayer
+        //glPlayer = myGLController.init()
+        //glView.glkDelegate = glPlayer
         //opengl es test
     }
     /*

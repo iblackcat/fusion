@@ -9,10 +9,6 @@
 import UIKit
 import GLKit
 
-protocol myGLKViewDelegate {
-    func dataSource() -> CVPixelBuffer?
-}
-
 class myGLKView: GLKView, GLKViewDelegate {
 
     var vertexShader: GLuint = 0
@@ -36,21 +32,23 @@ class myGLKView: GLKView, GLKViewDelegate {
     var fingerRotationX: Float = 0
     var fingerRotationY: Float = 0
     
-    var glkDelegate: myGLController?
+    //var glkDelegate: myGLController?
     
     var program: myGLProgram?
-    var texture: CVOpenGLESTexture?
+    var texture: GLuint = 0
+    
+    var testTexture: GLKTextureInfo? = nil
     //var texture: VKGLTexture?
     
     override init(frame: CGRect) {
         
         super.init(frame: frame)
         
-        glkDelegate = myGLController.init(frame: frame)
+        //glkDelegate = myGLController.init(frame: frame)
         
         self.configureGLKView()
-        self.configureTexture()
         self.configureProgram()
+        self.configureTexture()
         self.configureBuffer()
         self.configureUniform()
         self.configureDisplayLink()
@@ -61,11 +59,11 @@ class myGLKView: GLKView, GLKViewDelegate {
         
         super.init(coder: aDecoder)
         
-        glkDelegate = myGLController.init(coder: aDecoder)
+        //glkDelegate = myGLController.init(coder: aDecoder)
         
         self.configureGLKView()
-        self.configureTexture()
         self.configureProgram()
+        self.configureTexture()
         self.configureBuffer()
         self.configureUniform()
         self.configureDisplayLink()
@@ -78,9 +76,8 @@ class myGLKView: GLKView, GLKViewDelegate {
     }
     
     override func draw(_ rect: CGRect) {
+        glClearColor(1.0, 1.0, 1.0, 1.0)
         
-        
-        glClear(GLbitfield(GL_COLOR_BUFFER_BIT));
         //var buffer: CVPixelBuffer? = glkDelegate!.dataSource()
         
         //if buffer == nil {
@@ -92,10 +89,17 @@ class myGLKView: GLKView, GLKViewDelegate {
         //var matrix: GLKMatrix4 = GLKMatrix4Identity
         //var success: Bool  = matrixWithSize(size:self.bounds.size, matrix:&matrix)
         //if success {
+        
+        
+        glUniform1i(GLint(program!.uniformIndex(uniformName: "tex")), 0)
+        glBindTexture(GLenum(GL_TEXTURE_2D), texture)
+        
         glViewport(0, 0, GLsizei(rect.width*UIScreen.main.scale), GLsizei(rect.height*UIScreen.main.scale))
             
             //glUniformMatrix4fv(GLint(uniform_model_view_projection_matrix), 1, GLboolean(GL_FALSE), matrix.array)
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
+ 
+ 
         //}
         
     }
@@ -133,6 +137,10 @@ class myGLKView: GLKView, GLKViewDelegate {
     }
     
     func configureTexture() {
+        
+        testTexture = try! GLKTextureLoader.texture(with: (UIImage(named: "texture")!.cgImage)!, options: nil)
+        texture = testTexture!.name
+        
         //texture = VKGLTexture.init(context: self.context)
         //let image = UIImage(named: "texture")
         
