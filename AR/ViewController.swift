@@ -19,12 +19,12 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var DepthView: UIImageView!
     @IBOutlet weak var WeightView: UIImageView!
+    @IBOutlet weak var glView: myGLKView!
     
     var isPreviewStart: Bool = false
     var cubeNode: SCNNode!
     
-    @IBOutlet weak var glView: myGLKView!
-    
+    var cubePose: CameraPose! = nil
     
     var imageRect: ImageRectification!
     var inited: Bool = false
@@ -58,9 +58,6 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
             imageRect = ImageRectification.init()
             inited = true
         }
-        //let weightImage = sceneView.snapshot()
-        //WeightView.image = weightImage
-        //WeightView.image = glView.anUIImage
         
         guard let currentFrame = sceneView.session.currentFrame else {
             return
@@ -81,12 +78,15 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         let pose = CameraPose.init(A: g_intrinsics, trans: camerapose)
         
         if frameid % 2 == 0 {
-            imageRect.imageRectification(inputimage: snapimage, inputpose: pose)
+            let (img1, img2) = imageRect.imageRectification(inputimage: snapimage, inputpose: pose)
+            if img1 != nil && img2 != nil {
+                DepthView.image = img1
+                WeightView.image = img2
+            }
         }
-        WeightView.image = imageRect.testImage
+        
         frameid = (frameid + 1) % 400
         //print(currentFrame.camera.imageResolution)
-        
     }
     
     
@@ -139,6 +139,7 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         var translation = matrix_identity_float4x4
         translation.columns.3.z = -0.1
         cubeNode.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
+        cubePose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
         
         isPreviewStart = true
     }

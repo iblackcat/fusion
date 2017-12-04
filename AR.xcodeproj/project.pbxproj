@@ -17,7 +17,7 @@
 		B11553011FCFCE0D008FCE5C /* myGLRTT.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553001FCFCE0D008FCE5C /* myGLRTT.swift */; };
 		B11553031FD02738008FCE5C /* ImageRectification.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553021FD02738008FCE5C /* ImageRectification.swift */; };
 		B11553061FD030B6008FCE5C /* default.vsh in Resources */ = {isa = PBXBuildFile; fileRef = B11553051FD030B6008FCE5C /* default.vsh */; };
-		B11553081FD03108008FCE5C /* image_rectification.vsh in Resources */ = {isa = PBXBuildFile; fileRef = B11553071FD03108008FCE5C /* image_rectification.vsh */; };
+		B11553081FD03108008FCE5C /* image_rectification.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B11553071FD03108008FCE5C /* image_rectification.fsh */; };
 		B115530A1FD03474008FCE5C /* myGLRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553091FD03474008FCE5C /* myGLRenderer.swift */; };
 		B115530C1FD04A15008FCE5C /* CameraPose.swift in Sources */ = {isa = PBXBuildFile; fileRef = B115530B1FD04A15008FCE5C /* CameraPose.swift */; };
 		B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97091FCB196B00AB1001 /* myGLKView.swift */; };
@@ -41,7 +41,7 @@
 		B11553001FCFCE0D008FCE5C /* myGLRTT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLRTT.swift; sourceTree = "<group>"; };
 		B11553021FD02738008FCE5C /* ImageRectification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRectification.swift; sourceTree = "<group>"; };
 		B11553051FD030B6008FCE5C /* default.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = default.vsh; sourceTree = "<group>"; };
-		B11553071FD03108008FCE5C /* image_rectification.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = image_rectification.vsh; sourceTree = "<group>"; };
+		B11553071FD03108008FCE5C /* image_rectification.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = image_rectification.fsh; sourceTree = "<group>"; };
 		B11553091FD03474008FCE5C /* myGLRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLRenderer.swift; sourceTree = "<group>"; };
 		B115530B1FD04A15008FCE5C /* CameraPose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPose.swift; sourceTree = "<group>"; };
 		B14B97091FCB196B00AB1001 /* myGLKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLKView.swift; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 				B14B97581FCBE79100AB1001 /* Shader.vsh */,
 				B14B975A1FCBE89C00AB1001 /* Shader.fsh */,
 				B11553051FD030B6008FCE5C /* default.vsh */,
-				B11553071FD03108008FCE5C /* image_rectification.vsh */,
+				B11553071FD03108008FCE5C /* image_rectification.fsh */,
 			);
 			path = shader;
 			sourceTree = "<group>";
@@ -182,7 +182,7 @@
 				B1069A801FCAEB8B00604E8B /* Main.storyboard in Resources */,
 				B1069A851FCAEB8B00604E8B /* LaunchScreen.storyboard in Resources */,
 				B1069A7B1FCAEB8B00604E8B /* art.scnassets in Resources */,
-				B11553081FD03108008FCE5C /* image_rectification.vsh in Resources */,
+				B11553081FD03108008FCE5C /* image_rectification.fsh in Resources */,
 				B1069A821FCAEB8B00604E8B /* Assets.xcassets in Resources */,
 				B11553061FD030B6008FCE5C /* default.vsh in Resources */,
 			);
