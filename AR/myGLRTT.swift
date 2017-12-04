@@ -17,7 +17,6 @@ class myGLRTT {
     var _texture: GLuint = 0
     var _lastfbo: GLint = 0
     
-    var _numChannels: Int = 0
     var _internalformat: Int32 = 0
     var _format: Int32 = 0
     var _type: Int32 = 0
@@ -25,14 +24,6 @@ class myGLRTT {
     init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32) {
         glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &_lastfbo)
         
-        switch format {
-        case Int32(GL_RED), Int32(GL_GREEN), Int32(GL_BLUE): _numChannels = 1;
-        case Int32(GL_RGB): _numChannels = 3;
-        case Int32(GL_RGBA): _numChannels = 4;
-        default:
-            break
-        }
-        print("numChannels:", _numChannels)
         
         _width = width
         _height = height

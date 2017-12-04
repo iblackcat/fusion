@@ -17,19 +17,19 @@ class myGLProgram: NSObject {
     var vertexShader: GLuint = 0
     var fragmentShader: GLuint = 0
     
-    override init() {
+    init(vshname: String, fshname: String) {
         super.init()
-        self.configureShader()
+        self.configureShader(vshname: vshname, fshname: fshname)
     }
     
-    func configureShader() {
+    func configureShader(vshname: String, fshname: String) {
         program = glCreateProgram()
         
-        if !self.compileShader(&vertexShader, type: GLenum(GL_VERTEX_SHADER), file: Bundle.main.path(forResource: "Shader", ofType: "vsh")!) {
+        if !self.compileShader(&vertexShader, type: GLenum(GL_VERTEX_SHADER), file: Bundle.main.path(forResource: vshname, ofType: "vsh")!) {
             print("vertex shader failure")
         }
         
-        if !self.compileShader(&fragmentShader, type: GLenum(GL_FRAGMENT_SHADER), file: Bundle.main.path(forResource: "Shader", ofType: "fsh")!) {
+        if !self.compileShader(&fragmentShader, type: GLenum(GL_FRAGMENT_SHADER), file: Bundle.main.path(forResource: fshname, ofType: "fsh")!) {
             print("fragment shader failure")
         }
         

@@ -52,6 +52,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         //glkDelegate = myGLController.init(frame: frame)
         
         self.configureGLKView()
+        /*
         self.configureProgram()
         self.configureTexture()
         self.configureBuffer()
@@ -61,6 +62,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         _rtt = myGLRTT.init(width: GLsizei(240*UIScreen.main.scale), height: GLsizei(180*UIScreen.main.scale), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         
         render_to_fbo()
+        */
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -69,6 +71,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         //glkDelegate = myGLController.init(coder: aDecoder)
         
         self.configureGLKView()
+        /*
         self.configureProgram()
         self.configureTexture()
         self.configureBuffer()
@@ -78,6 +81,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         _rtt = myGLRTT.init(width: GLsizei(240*UIScreen.main.scale), height: GLsizei(180*UIScreen.main.scale), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         
         render_to_fbo()
+        */
     }
     
     
@@ -111,7 +115,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         print("read pixels result:", glGetError())
         print("bytes:",bytes[0], bytes[1], bytes[2])
         
-        getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+        anUIImage = getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
     
         if anUIImage == nil {
             fatalError("image = nil")
@@ -169,21 +173,8 @@ class myGLKView: GLKView, GLKViewDelegate {
         */
     }
     
-    
-    func getUIImagefromRGBABuffer(src_buffer: UnsafeMutableRawPointer, width: Int, height: Int) {
-        var colorSpace: CGColorSpace?
-        var alphaInfo: CGImageAlphaInfo!
-        var bmcontext: CGContext?
-        colorSpace = CGColorSpaceCreateDeviceRGB()
-        alphaInfo = .noneSkipLast
-        
-        bmcontext = CGContext(data: src_buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: colorSpace!, bitmapInfo: alphaInfo.rawValue)!
-        let rgbImage: CGImage? = bmcontext!.makeImage()
-        anUIImage = UIImage(cgImage: rgbImage!)
-        
-    }
-    
     override func draw(_ rect: CGRect) {
+        /*
         glClearColor(1.0, 1.0, 1.0, 1.0)
         
         //var buffer: CVPixelBuffer? = glkDelegate!.dataSource()
@@ -209,7 +200,7 @@ class myGLKView: GLKView, GLKViewDelegate {
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
         
         //}
-        
+        */
     }
     
     func configureGLKView() {
@@ -225,7 +216,7 @@ class myGLKView: GLKView, GLKViewDelegate {
     
     func configureProgram() {
         
-        self.program = myGLProgram()
+        self.program = myGLProgram(vshname: "Shader", fshname: "Shader")
         self.program!.addAttribute(attributeName: "position")
         self.program!.addAttribute(attributeName: "texCoord")
         

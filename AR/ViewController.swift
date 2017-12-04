@@ -10,6 +10,10 @@ import UIKit
 import SceneKit
 import ARKit
 
+public let g_width = 640
+public let g_height = 360
+public let g_intrinsics = simd_float3x3([float3(513.98, 0.0, 0.0), float3(0.0, 513.98, 0.0), float3(320.0865, 179.7095, 1.0)])
+
 class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
@@ -20,6 +24,12 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     var cubeNode: SCNNode!
     
     @IBOutlet weak var glView: myGLKView!
+    
+    
+    var imageRect: ImageRectification!
+    var inited: Bool = false
+    
+    var frameid: Int32 = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,17 +54,39 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     //override session(_:didUpdate:) to update DepthView and WeightView every frame
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
      
+        if !inited {
+            imageRect = ImageRectification.init()
+            inited = true
+        }
         //let weightImage = sceneView.snapshot()
         //WeightView.image = weightImage
-        WeightView.image = glView.anUIImage
-        /*
+        //WeightView.image = glView.anUIImage
+        
         guard let currentFrame = sceneView.session.currentFrame else {
             return
         }
+        /*
+        //
+        var pixelbuffer = currentFrame.capturedImage
         
-        let camerapose = currentFrame.camera.transform
-        let image = currentFrame.capturedImage
+        let image = CIImage.init(cvImageBuffer: pixelbuffer)
+        let context = CIContext()
+        let cgiImage = context.createCGImage(image, from: image.extent)
+        let capturedImage = UIImage.init(cgImage: cgiImage!)
+ 
         */
+        let snapimage = sceneView.snapshot()
+        //DepthView.image = capturedImage
+        let camerapose = currentFrame.camera.transform
+        let pose = CameraPose.init(A: g_intrinsics, trans: camerapose)
+        
+        if frameid % 2 == 0 {
+            imageRect.imageRectification(inputimage: snapimage, inputpose: pose)
+        }
+        WeightView.image = imageRect.testImage
+        frameid = (frameid + 1) % 400
+        //print(currentFrame.camera.imageResolution)
+        
     }
     
     
