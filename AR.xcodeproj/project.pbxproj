@@ -20,6 +20,11 @@
 		B11553081FD03108008FCE5C /* image_rectification.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B11553071FD03108008FCE5C /* image_rectification.fsh */; };
 		B115530A1FD03474008FCE5C /* myGLRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553091FD03474008FCE5C /* myGLRenderer.swift */; };
 		B115530C1FD04A15008FCE5C /* CameraPose.swift in Sources */ = {isa = PBXBuildFile; fileRef = B115530B1FD04A15008FCE5C /* CameraPose.swift */; };
+		B115535A1FD59580008FCE5C /* FramePool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553591FD59580008FCE5C /* FramePool.swift */; };
+		B115535C1FD693A2008FCE5C /* StereoMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = B115535B1FD693A2008FCE5C /* StereoMatching.swift */; };
+		B11553601FD696C1008FCE5C /* lrcheck_and_triangulation.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */; };
+		B11553611FD696C1008FCE5C /* stereo_matching_ZNCC.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */; };
+		B11553621FD696C1008FCE5C /* stereo_matching_SSD.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */; };
 		B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97091FCB196B00AB1001 /* myGLKView.swift */; };
 		B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97511FCBBEC900AB1001 /* myGLProgram.swift */; };
 		B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */ = {isa = PBXBuildFile; fileRef = B14B97541FCBDD0900AB1001 /* myGenVertices.c */; };
@@ -44,6 +49,11 @@
 		B11553071FD03108008FCE5C /* image_rectification.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = image_rectification.fsh; sourceTree = "<group>"; };
 		B11553091FD03474008FCE5C /* myGLRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLRenderer.swift; sourceTree = "<group>"; };
 		B115530B1FD04A15008FCE5C /* CameraPose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPose.swift; sourceTree = "<group>"; };
+		B11553591FD59580008FCE5C /* FramePool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramePool.swift; sourceTree = "<group>"; };
+		B115535B1FD693A2008FCE5C /* StereoMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StereoMatching.swift; sourceTree = "<group>"; };
+		B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lrcheck_and_triangulation.fsh; sourceTree = "<group>"; };
+		B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = stereo_matching_ZNCC.fsh; sourceTree = "<group>"; };
+		B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = stereo_matching_SSD.fsh; sourceTree = "<group>"; };
 		B14B97091FCB196B00AB1001 /* myGLKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLKView.swift; sourceTree = "<group>"; };
 		B14B97511FCBBEC900AB1001 /* myGLProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLProgram.swift; sourceTree = "<group>"; };
 		B14B97531FCBDCDF00AB1001 /* myGenVertices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = myGenVertices.h; sourceTree = "<group>"; };
@@ -89,8 +99,10 @@
 				B14B97511FCBBEC900AB1001 /* myGLProgram.swift */,
 				B11553091FD03474008FCE5C /* myGLRenderer.swift */,
 				B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */,
+				B115535B1FD693A2008FCE5C /* StereoMatching.swift */,
 				B11553021FD02738008FCE5C /* ImageRectification.swift */,
 				B115530B1FD04A15008FCE5C /* CameraPose.swift */,
+				B11553591FD59580008FCE5C /* FramePool.swift */,
 				B1069A7E1FCAEB8B00604E8B /* Main.storyboard */,
 				B1069A781FCAEB8B00604E8B /* AppDelegate.swift */,
 				B1069A7A1FCAEB8B00604E8B /* art.scnassets */,
@@ -108,6 +120,9 @@
 		B11553041FD02FEF008FCE5C /* shader */ = {
 			isa = PBXGroup;
 			children = (
+				B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */,
+				B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */,
+				B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */,
 				B14B97581FCBE79100AB1001 /* Shader.vsh */,
 				B14B975A1FCBE89C00AB1001 /* Shader.fsh */,
 				B11553051FD030B6008FCE5C /* default.vsh */,
@@ -181,7 +196,10 @@
 				B14B975B1FCBE89C00AB1001 /* Shader.fsh in Resources */,
 				B1069A801FCAEB8B00604E8B /* Main.storyboard in Resources */,
 				B1069A851FCAEB8B00604E8B /* LaunchScreen.storyboard in Resources */,
+				B11553611FD696C1008FCE5C /* stereo_matching_ZNCC.fsh in Resources */,
 				B1069A7B1FCAEB8B00604E8B /* art.scnassets in Resources */,
+				B11553621FD696C1008FCE5C /* stereo_matching_SSD.fsh in Resources */,
+				B11553601FD696C1008FCE5C /* lrcheck_and_triangulation.fsh in Resources */,
 				B11553081FD03108008FCE5C /* image_rectification.fsh in Resources */,
 				B1069A821FCAEB8B00604E8B /* Assets.xcassets in Resources */,
 				B11553061FD030B6008FCE5C /* default.vsh in Resources */,
@@ -195,9 +213,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B115535C1FD693A2008FCE5C /* StereoMatching.swift in Sources */,
 				B11553011FCFCE0D008FCE5C /* myGLRTT.swift in Sources */,
 				B11552FF1FCFB3F2008FCE5C /* FusionBrain.swift in Sources */,
 				B11553031FD02738008FCE5C /* ImageRectification.swift in Sources */,
+				B115535A1FD59580008FCE5C /* FramePool.swift in Sources */,
 				B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */,
 				B1069A7D1FCAEB8B00604E8B /* ViewController.swift in Sources */,
 				B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */,

@@ -12,26 +12,21 @@ import ARKit
 
 class ImageRectification: NSObject {
     
-    var _renderer: myGLRenderer!
-    var _tex: myGLTexture2D!
+    var _renderer1: myGLRenderer!
+    var _renderer2: myGLRenderer!
     
-    var testImage: UIImage!
-    var _texture: GLuint!
-    var _textureInfo: GLKTextureInfo!
-    
-    var lastTexture: GLuint! = nil
-    var lastPose: CameraPose! = nil
+    var gl_error: GLenum = 0
     
     override init() {
         super.init()
-        _renderer = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
-        _renderer.setShaderFile(vshname: "default", fshname: "image_rectification")
-        //_renderer.setShaderFile(vshname: "Shader", fshname: "Shader")
+        _renderer1 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer1.setShaderFile(vshname: "default", fshname: "image_rectification")
         
-        //_tex = _renderer.createTexture(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer2 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer2.setShaderFile(vshname: "default", fshname: "image_rectification")
     }
     
-    func getRectifiedPose(p1: CameraPose, p2: CameraPose) -> (p1_rec: CameraPose?, p2_rec: CameraPose?) {
+    static func getRectifiedPose(p1: CameraPose, p2: CameraPose) -> (p1_rec: CameraPose?, p2_rec: CameraPose?) {
         var p1_rec: CameraPose? = nil
         var p2_rec: CameraPose? = nil
         
@@ -57,67 +52,63 @@ class ImageRectification: NSObject {
         return (p1_rec, p2_rec)
     }
  
-    func imageRectification(inputimage: UIImage!, inputpose: CameraPose!) -> (img1: UIImage?, img2: UIImage?) {
-        var img1: UIImage? = nil
-        var img2: UIImage? = nil
+    func imageRectification(frame1: Frame, frame2: Frame) -> (tex1: GLuint?, tex2: GLuint?) {
+        var tex1: GLuint? = nil
+        var tex2: GLuint? = nil
         
-        _textureInfo = try! GLKTextureLoader.texture(with: inputimage.cgImage!, options: nil)
-        _texture = _textureInfo!.name
+        var p1rec: CameraPose? = nil
+        var p2rec: CameraPose? = nil
+        (p1rec, p2rec) = ImageRectification.getRectifiedPose(p1: frame1._pose, p2: frame2._pose)
+        let rect_tran1: matrix_float3x3 = frame1._pose.Q * p1rec!.Q.inverse
+        let rect_tran2: matrix_float3x3 = frame2._pose.Q * p2rec!.Q.inverse
         
-        if lastTexture != nil && lastPose != nil {
-            var p1rec: CameraPose? = nil
-            var p2rec: CameraPose? = nil
-            (p1rec, p2rec) = self.getRectifiedPose(p1: inputpose, p2: lastPose)
-            let rect_tran1: matrix_float3x3 = inputpose.Q * p1rec!.Q.inverse
-            let rect_tran2: matrix_float3x3 = lastPose.Q * p2rec!.Q.inverse
+        var trans1 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
+        var trans2 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
             
-            var trans1 = [Float32](repeating: 0.0, count: Int(16))
-            var trans2 = [Float32](repeating: 0.0, count: Int(16))
-            
-            for i in 0...3 {
-                for j in 0...3 {
-                    if i == 3 && j == 3 {
-                        trans1[i*4+j] = Float32(1.0)
-                        trans2[i*4+j] = Float32(1.0)
-                    } else if (i == 3 || j == 3) {
-                        trans1[i*4+j] = Float32(0.0)
-                        trans2[i*4+j] = Float32(0.0)
-                    } else {
-                        trans1[i*4+j] = rect_tran1[i][j]
-                        trans2[i*4+j] = rect_tran2[i][j]
-                    }
+        for i in 0...3 {
+            for j in 0...3 {
+                if i == 3 && j == 3 {
+                    trans1[i*4+j] = GLfloat(1.0)
+                    trans2[i*4+j] = GLfloat(1.0)
+                } else if (i == 3 || j == 3) {
+                    trans1[i*4+j] = GLfloat(0.0)
+                    trans2[i*4+j] = GLfloat(0.0)
+                } else {
+                    trans1[i*4+j] = GLfloat(rect_tran1[i][j])
+                    trans2[i*4+j] = GLfloat(rect_tran2[i][j])
                 }
             }
-            
-            //rectification for image1
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
-            glUniformMatrix4fv(GLint(_renderer._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), trans1)
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "tex")), 0)
-            glBindTexture(GLenum(GL_TEXTURE_2D), _texture)
-            _renderer.renderScene()
-            img1 = _renderer.getFramebufferImage()
-            
-            //rectification for image2
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
-            glUniformMatrix4fv(GLint(_renderer._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), trans2)
-            glUniform1i(GLint(_renderer._program.uniformIndex(uniformName: "tex")), 0)
-            glBindTexture(GLenum(GL_TEXTURE_2D), lastTexture)
-            _renderer.renderScene()
-            img2 = _renderer.getFramebufferImage()
-        } else {
-            print("first frame")
         }
- 
-        lastTexture = _texture
-        lastPose = inputpose
         
-        _textureInfo = nil
-        _texture = nil
+        //rectification for image1
+        _renderer1._program.use()
+        
+        glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
+        glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
+        glUniformMatrix4fv(GLint(_renderer1._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), &trans1)
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(GL_TEXTURE_2D), frame1._texture)
+        glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "tex")), 0)
+        _renderer1.renderScene()
+        
+        //rectification for image2
+        glUniform1i(GLint(_renderer2._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
+        glUniform1i(GLint(_renderer2._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
+        glUniformMatrix4fv(GLint(_renderer2._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), &trans2)
+        glUniform1i(GLint(_renderer2._program.uniformIndex(uniformName: "tex")), 0)
+        glBindTexture(GLenum(GL_TEXTURE_2D), frame2._texture)
+        _renderer2.renderScene()
+        
+        tex1 = _renderer1._rtt._texture
+        tex2 = _renderer2._rtt._texture
+    
+        return (tex1, tex2)
+    }
+    
+    func getUIImage() -> (img1: UIImage?, img2: UIImage?) {
+        let img1 = _renderer1.getFramebufferImage()
+        let img2 = _renderer2.getFramebufferImage()
         
         return (img1, img2)
     }
-    
-    
 }

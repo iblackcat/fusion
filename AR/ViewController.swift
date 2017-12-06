@@ -10,9 +10,10 @@ import UIKit
 import SceneKit
 import ARKit
 
-public let g_width = 640
-public let g_height = 360
-public let g_intrinsics = simd_float3x3([float3(513.98, 0.0, 0.0), float3(0.0, 513.98, 0.0), float3(320.0865, 179.7095, 1.0)])
+public let g_width = 320
+public let g_height = 180
+//public let g_intrinsics = simd_float3x3([float3(513.98, 0.0, 0.0), float3(0.0, 513.98, 0.0), float3(320.0865, 179.7095, 1.0)])
+public let g_intrinsics = simd_float3x3([float3(257, 0.0, 0.0), float3(0.0, 257, 0.0), float3(160.04325, 89.85475, 1.0)])
 
 class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
 
@@ -22,11 +23,12 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     @IBOutlet weak var glView: myGLKView!
     
     var isPreviewStart: Bool = false
+    var isFusionStart: Bool = false
     var cubeNode: SCNNode!
     
     var cubePose: CameraPose! = nil
     
-    var imageRect: ImageRectification!
+    var fusionBrain: FusionBrain! = nil
     var inited: Bool = false
     
     var frameid: Int32 = 0
@@ -53,14 +55,14 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     
     //override session(_:didUpdate:) to update DepthView and WeightView every frame
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-     
-        if !inited {
-            imageRect = ImageRectification.init()
-            inited = true
-        }
         
         guard let currentFrame = sceneView.session.currentFrame else {
             return
+        }
+        
+        if !inited {
+            fusionBrain = FusionBrain.init()
+            inited = true
         }
         /*
         //
@@ -72,19 +74,23 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         let capturedImage = UIImage.init(cgImage: cgiImage!)
  
         */
-        let snapimage = sceneView.snapshot()
-        //DepthView.image = capturedImage
-        let camerapose = currentFrame.camera.transform
-        let pose = CameraPose.init(A: g_intrinsics, trans: camerapose)
-        
-        if frameid % 2 == 0 {
-            let (img1, img2) = imageRect.imageRectification(inputimage: snapimage, inputpose: pose)
-            if img1 != nil && img2 != nil {
-                DepthView.image = img1
-                WeightView.image = img2
+        if isFusionStart {
+            
+            let snapimage = sceneView.snapshot()
+            let transform = currentFrame.camera.transform
+            let pose = CameraPose.init(A: g_intrinsics, trans: transform)
+            
+            if frameid % 10 == 0 {
+                let (img1, img2) = fusionBrain.newFrame(image: snapimage, pose: pose)
+                if img1 != nil && img2 != nil {
+                    DepthView.image = img1
+                    WeightView.image = snapimage
+                } else {
+                    print("???")
+                }
             }
+            
         }
-        
         frameid = (frameid + 1) % 400
         //print(currentFrame.camera.imageResolution)
     }
@@ -111,6 +117,8 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         else {
             cubeNode.scale = SCNVector3(last_scale * 1.01, last_scale * 1.01, last_scale * 1.01)
         }
+        
+        Cube.Scale = cubeNode.scale.x
     }
     
     @IBAction func setPreviewCube(_ sender: UIButton) {
@@ -139,12 +147,24 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         var translation = matrix_identity_float4x4
         translation.columns.3.z = -0.1
         cubeNode.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
-        cubePose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
+        Cube.Pose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
         
         isPreviewStart = true
     }
     
+    @IBAction func startFusion(_ sender: UIButton) {
+        if !isPreviewStart {
+            return
+        }
+        
+        sceneView.scene.rootNode.childNodes[0].removeFromParentNode()
+        isFusionStart = true
+    }
     
+    @IBAction func stopFusion(_ sender: UIButton) {
+        
+        isFusionStart = false
+    }
     
     
     override func viewWillAppear(_ animated: Bool) {

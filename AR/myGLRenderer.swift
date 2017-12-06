@@ -152,15 +152,19 @@ class myGLRenderer: NSObject {
         _rtt.unbind_to_lastfbo()
     }
     
-    func getFramebufferImage() -> UIImage {
+    func getFramebufferImage() -> UIImage? {
         let byteLength = Int(_rtt._width * _rtt._height)
         var bytes = [UInt32](repeating: 0, count: Int(byteLength))
         
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _rtt._framebuffer)
         glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(_rtt._format), GLenum(_rtt._type), &bytes)
         var anUIImage: UIImage! = nil
-        if glGetError() == 0 {
+        
+        let gl_error = glGetError()
+        if gl_error == 0 {
             anUIImage = getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror:", gl_error)
         }
         return anUIImage
     }
@@ -175,6 +179,9 @@ public func getUIImagefromRGBABuffer(src_buffer: UnsafeMutableRawPointer, width:
     
     bmcontext = CGContext(data: src_buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: colorSpace!, bitmapInfo: alphaInfo.rawValue)!
     let rgbImage: CGImage? = bmcontext!.makeImage()
+    if rgbImage == nil {
+        fatalError()
+    }
     let anUIImage = UIImage(cgImage: rgbImage!)
     return anUIImage
 }
