@@ -9,7 +9,7 @@
 import Foundation
 import GLKit
 
-public var MAX_FRAME_NUM: Int = 10
+public var MAX_FRAME_NUM: Int = 5
 
 class Frame: NSObject {
     var _texture: GLuint!
@@ -52,7 +52,7 @@ class FramePool: NSObject {
         }
     
         //?!
-        return frames[(head-3+10)%10]
+        return frames[(head-3+MAX_FRAME_NUM)%MAX_FRAME_NUM]
         
         
         var bestScore: Float = framePairScore(frame1: frame, frame2: frames[0]!)
@@ -73,7 +73,8 @@ class FramePool: NSObject {
         var delta_max: Float = 0.0
         let (rect_pose1, rect_pose2) = ImageRectification.getRectifiedPose(p1: frame1._pose, p2: frame2._pose)
         for i in 0..<8 {
-            let world_coord: float3 = Cube.Pose.R.inverse * Cube.Vertices[i] - Cube.Pose.R.inverse * Cube.Pose.t
+            let edgeLength = 0.1*Cube.Scale
+            let world_coord: float3 = Cube.Pose.R.inverse * (Cube.Vertices[i]*edgeLength) - Cube.Pose.R.inverse * Cube.Pose.t
             let delta: Float = fabsf(
                 (rect_pose1!.R * world_coord + rect_pose1!.t)[0] - (rect_pose2!.R * world_coord + rect_pose2!.t)[0]
             )

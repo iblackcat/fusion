@@ -25,12 +25,15 @@
 		B11553601FD696C1008FCE5C /* lrcheck_and_triangulation.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */; };
 		B11553611FD696C1008FCE5C /* stereo_matching_ZNCC.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */; };
 		B11553621FD696C1008FCE5C /* stereo_matching_SSD.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */; };
+		B11553641FD78E5A008FCE5C /* TSDFModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11553631FD78E5A008FCE5C /* TSDFModel.swift */; };
+		B11553661FD7CACE008FCE5C /* model_updating.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B11553651FD7CACE008FCE5C /* model_updating.fsh */; };
 		B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97091FCB196B00AB1001 /* myGLKView.swift */; };
 		B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14B97511FCBBEC900AB1001 /* myGLProgram.swift */; };
 		B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */ = {isa = PBXBuildFile; fileRef = B14B97541FCBDD0900AB1001 /* myGenVertices.c */; };
 		B14B97591FCBE79100AB1001 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = B14B97581FCBE79100AB1001 /* Shader.vsh */; };
 		B14B975B1FCBE89C00AB1001 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B14B975A1FCBE89C00AB1001 /* Shader.fsh */; };
 		B14B97611FCBF74000AB1001 /* AR-Bridging-Header.h in Resources */ = {isa = PBXBuildFile; fileRef = B14B97561FCBE4EC00AB1001 /* AR-Bridging-Header.h */; };
+		B1E4EFE61FDC05F600ADA9A8 /* ray_tracing.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B1E4EFE51FDC05F500ADA9A8 /* ray_tracing.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +57,8 @@
 		B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lrcheck_and_triangulation.fsh; sourceTree = "<group>"; };
 		B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = stereo_matching_ZNCC.fsh; sourceTree = "<group>"; };
 		B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = stereo_matching_SSD.fsh; sourceTree = "<group>"; };
+		B11553631FD78E5A008FCE5C /* TSDFModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSDFModel.swift; sourceTree = "<group>"; };
+		B11553651FD7CACE008FCE5C /* model_updating.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = model_updating.fsh; sourceTree = "<group>"; };
 		B14B97091FCB196B00AB1001 /* myGLKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLKView.swift; sourceTree = "<group>"; };
 		B14B97511FCBBEC900AB1001 /* myGLProgram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myGLProgram.swift; sourceTree = "<group>"; };
 		B14B97531FCBDCDF00AB1001 /* myGenVertices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = myGenVertices.h; sourceTree = "<group>"; };
@@ -61,6 +66,7 @@
 		B14B97561FCBE4EC00AB1001 /* AR-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-Bridging-Header.h"; sourceTree = "<group>"; };
 		B14B97581FCBE79100AB1001 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		B14B975A1FCBE89C00AB1001 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
+		B1E4EFE51FDC05F500ADA9A8 /* ray_tracing.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ray_tracing.fsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +105,7 @@
 				B14B97511FCBBEC900AB1001 /* myGLProgram.swift */,
 				B11553091FD03474008FCE5C /* myGLRenderer.swift */,
 				B11552FE1FCFB3F2008FCE5C /* FusionBrain.swift */,
+				B11553631FD78E5A008FCE5C /* TSDFModel.swift */,
 				B115535B1FD693A2008FCE5C /* StereoMatching.swift */,
 				B11553021FD02738008FCE5C /* ImageRectification.swift */,
 				B115530B1FD04A15008FCE5C /* CameraPose.swift */,
@@ -123,10 +130,12 @@
 				B115535D1FD696BF008FCE5C /* lrcheck_and_triangulation.fsh */,
 				B115535F1FD696C0008FCE5C /* stereo_matching_SSD.fsh */,
 				B115535E1FD696C0008FCE5C /* stereo_matching_ZNCC.fsh */,
+				B1E4EFE51FDC05F500ADA9A8 /* ray_tracing.fsh */,
+				B11553651FD7CACE008FCE5C /* model_updating.fsh */,
+				B11553071FD03108008FCE5C /* image_rectification.fsh */,
 				B14B97581FCBE79100AB1001 /* Shader.vsh */,
 				B14B975A1FCBE89C00AB1001 /* Shader.fsh */,
 				B11553051FD030B6008FCE5C /* default.vsh */,
-				B11553071FD03108008FCE5C /* image_rectification.fsh */,
 			);
 			path = shader;
 			sourceTree = "<group>";
@@ -198,10 +207,12 @@
 				B1069A851FCAEB8B00604E8B /* LaunchScreen.storyboard in Resources */,
 				B11553611FD696C1008FCE5C /* stereo_matching_ZNCC.fsh in Resources */,
 				B1069A7B1FCAEB8B00604E8B /* art.scnassets in Resources */,
+				B1E4EFE61FDC05F600ADA9A8 /* ray_tracing.fsh in Resources */,
 				B11553621FD696C1008FCE5C /* stereo_matching_SSD.fsh in Resources */,
 				B11553601FD696C1008FCE5C /* lrcheck_and_triangulation.fsh in Resources */,
 				B11553081FD03108008FCE5C /* image_rectification.fsh in Resources */,
 				B1069A821FCAEB8B00604E8B /* Assets.xcassets in Resources */,
+				B11553661FD7CACE008FCE5C /* model_updating.fsh in Resources */,
 				B11553061FD030B6008FCE5C /* default.vsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,6 +232,7 @@
 				B14B97551FCBDD0900AB1001 /* myGenVertices.c in Sources */,
 				B1069A7D1FCAEB8B00604E8B /* ViewController.swift in Sources */,
 				B14B97521FCBBEC900AB1001 /* myGLProgram.swift in Sources */,
+				B11553641FD78E5A008FCE5C /* TSDFModel.swift in Sources */,
 				B115530A1FD03474008FCE5C /* myGLRenderer.swift in Sources */,
 				B115530C1FD04A15008FCE5C /* CameraPose.swift in Sources */,
 				B14B970A1FCB196B00AB1001 /* myGLKView.swift in Sources */,

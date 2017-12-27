@@ -15,13 +15,14 @@ class myGLRTT {
     
     var _framebuffer: GLuint = 0
     var _texture: GLuint = 0
+    var _texture1: GLuint = 0
     var _lastfbo: GLint = 0
     
     var _internalformat: Int32 = 0
     var _format: Int32 = 0
     var _type: Int32 = 0
     
-    init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32) {
+    init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32, textures: Int = 1) {
         glGetIntegerv(GLenum(GL_FRAMEBUFFER_BINDING), &_lastfbo)
         
         
@@ -46,6 +47,22 @@ class myGLRTT {
         
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
         glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
+        if (textures == 2) {
+            glGenTextures(1, &_texture1)
+            glBindTexture(GLenum(GL_TEXTURE_2D), _texture1)
+            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(_internalformat), width, height, 0, GLenum(_format), GLenum(_type), nil)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
+            glBindTexture(GLenum(GL_TEXTURE_2D), 0)
+            
+            glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
+            glDrawBuffers(GLsizei(2),[GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_COLOR_ATTACHMENT1)])
+        }
+        //glDrawBuffers(GLsizei(1),[GLenum(GL_COLOR_ATTACHMENT0)])
+        //let bytes = [GLuint](repeating: 0, count: Int(4))
+        //glClearBufferuiv(GLenum(GL_COLOR), 0, bytes)
         
         let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
         if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {

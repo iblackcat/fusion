@@ -1,7 +1,8 @@
+#version 300 es
 
 precision mediump float;
 
-varying mediump vec2 st;
+in vec2 st;
 
 uniform int m_w;
 uniform int m_h;
@@ -14,22 +15,24 @@ int d_max = 64;
 float MAX_FLOAT = float(1000000);
 float pC[64];
 
+out vec4 FragColor;
+
 void main()  
 {  
 	vec4 i1, i2;
-	i1 = texture2D(tex, st);
-	i2 = texture2D(tex2, st);
+	i1 = texture(tex, st);
+	i2 = texture(tex2, st);
 	float gray1 = 0.0, gray2 = 0.0;
 
 	float dx = 1.0 / float(m_w);
-	float dy = 1.0 / float(m_h);
+	float dy = 1.0 / float(m_h); 
 	float x = st.x, y = st.y;
 	float xx, yy, x0;
 	
 	int n = 0;
 	float delta = 0.0;
 	float C, min_C = MAX_FLOAT;
-	if (i1.a == 0.0 || (i1.r == 0.0 && i1.g == 0.0 && i1.b == 0.0)) gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+	if (i1.a == 0.0 || (i1.r == 0.0 && i1.g == 0.0 && i1.b == 0.0)) FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 	else {
         
 		delta = 0.0;
@@ -43,8 +46,8 @@ void main()
 					yy = y + float(j)*dy;
 					x0 = st.x + float(i)*dx;
 					if (xx < 0.0 || xx > 1.0 || yy < 0.0 || yy > 1.0 || x0 < 0.0 || x0 > 1.0) continue;
-					i1 = texture2D(tex,  vec2(x0, yy));
-					i2 = texture2D(tex2, vec2(xx, yy));
+					i1 = texture(tex,  vec2(x0, yy));
+					i2 = texture(tex2, vec2(xx, yy));
 					gray1 = i1.r*0.299 + i1.g*0.587 + i1.b*0.114;
 					gray2 = i2.r*0.299 + i2.g*0.587 + i2.b*0.114;
 
@@ -74,7 +77,7 @@ void main()
 		}
 		
         if (delta == 0.0) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+            FragColor = vec4(0.0, 0.0, 0.0, 0.0);
         }
 		else {
 			//int test = int(double(delta) * 256.0 * 256.0);
@@ -84,7 +87,7 @@ void main()
 			//float R = float(test / 256 / 256) / 255.0;
 
 			//gl_FragColor = delta;
-            gl_FragColor = vec4(delta/255.0, delta/255.0, delta/255.0, 1.0);
+            FragColor = vec4(delta/255.0, delta/255.0, delta/255.0, 1.0);
 		}
         //gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 	}

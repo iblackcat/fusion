@@ -1,8 +1,9 @@
+#version 300 es
 
-attribute vec3 position;
-attribute vec2 texCoord;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texCoord;
 
-varying vec2 v_textureCoordinate;
+out vec2 v_textureCoordinate;
 
 //uniform mat4 modelViewProjectionMatrix;
 

@@ -42,7 +42,7 @@ class myGLRenderer: NSObject {
     var _format: Int32 = 0
     var _type: Int32 = 0
     
-    init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32) {
+    init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32, textures: Int = 1) {
         switch format {
         case Int32(GL_RED), Int32(GL_GREEN), Int32(GL_BLUE): _numChannels = 1;
         case Int32(GL_RGB): _numChannels = 3;
@@ -55,7 +55,7 @@ class myGLRenderer: NSObject {
         _format = format
         _type = type
         
-        _rtt = myGLRTT.init(width: width, height: height, internalformat: internalformat, format: format, type: type)
+        _rtt = myGLRTT.init(width: width, height: height, internalformat: internalformat, format: format, type: type, textures: textures)
     }
     
     func setShaderFile(vshname: String, fshname: String) {
@@ -113,7 +113,7 @@ class myGLRenderer: NSObject {
         
     }
     
-    func createTexture(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32) -> myGLTexture2D {
+    static func createTexture(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32) -> myGLTexture2D {
         let texture: myGLTexture2D = myGLTexture2D.init(width: width, height: height, texid: GLuint(0), format: format, type: type)
         
         glGenTextures(1, &texture._textureid)
@@ -139,16 +139,24 @@ class myGLRenderer: NSObject {
     func renderScene() {
         
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+        var gl_error = glGetError()
+        print("glerror r1:", gl_error)
         
         glViewport(0, 0, _rtt._width, _rtt._height)
         _rtt.bind()
+        gl_error = glGetError()
+        print("glerror r2:", gl_error)
         
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexBufferID)
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexTexCoordID)
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), vertexIndicesBufferID)
         
+        gl_error = glGetError()
+        print("glerror r3:", gl_error)
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
         
+        gl_error = glGetError()
+        print("glerror r4:", gl_error)
         _rtt.unbind_to_lastfbo()
     }
     

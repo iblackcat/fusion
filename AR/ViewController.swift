@@ -80,11 +80,13 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
             let transform = currentFrame.camera.transform
             let pose = CameraPose.init(A: g_intrinsics, trans: transform)
             
-            if frameid % 10 == 0 {
+            if frameid % 20 == 0 {
                 let (img1, img2) = fusionBrain.newFrame(image: snapimage, pose: pose)
                 if img1 != nil && img2 != nil {
                     DepthView.image = img1
-                    WeightView.image = snapimage
+                    WeightView.image = img2
+                } else if img1 != nil {
+                    DepthView.image = img1
                 } else {
                     print("???")
                 }
@@ -162,8 +164,11 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     }
     
     @IBAction func stopFusion(_ sender: UIButton) {
-        
-        isFusionStart = false
+        let img: UIImage? = fusionBrain.tsdfModel.getModelUIImage()
+        if img != nil {
+            WeightView.image = img
+        }
+        //isFusionStart = false
     }
     
     

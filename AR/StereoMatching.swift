@@ -30,6 +30,28 @@ class StereoMatching {
         
         _renderer2 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         _renderer2.setShaderFile(vshname: "default", fshname: "stereo_matching_SSD")
+        
+        _renderer_depth = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer_depth.setShaderFile(vshname: "default", fshname: "lrcheck_and_triangulation")
+    }
+    
+    func depthEstimation(tex1: GLuint!, tex2: GLuint!, baseline: Float) -> GLuint? {
+        _renderer_depth._program.use()
+        
+        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
+        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "max_diff")), GLint(5))
+        glUniform1f(GLint(_renderer_depth._program.uniformIndex(uniformName: "baseline")), GLfloat(baseline))
+        glUniform1f(GLint(_renderer_depth._program.uniformIndex(uniformName: "fx")), GLfloat(g_intrinsics[0][0]))
+        
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(GL_TEXTURE_2D), tex1)
+        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "tex")), 0)
+        glActiveTexture(GLenum(GL_TEXTURE1))
+        glBindTexture(GLenum(GL_TEXTURE_2D), tex2)
+        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "tex2")), 1)
+        _renderer_depth.renderScene()
+        
+        return _renderer_depth._rtt._texture
     }
     
     func disparityEstimation(tex1: GLuint!, tex2: GLuint!) -> (GLuint?, GLuint?) {
@@ -67,10 +89,10 @@ class StereoMatching {
     func getUIImage() -> (img1: UIImage?, img2: UIImage?) {
         let img1 = _renderer1.getFramebufferImage()
         let img2 = _renderer2.getFramebufferImage()
-        if img1 == nil {
-            print("nani???")
-        }
-        
         return (img1, img2)
+    }
+    
+    func getDepthUIImage() -> UIImage? {
+        return _renderer_depth.getFramebufferImage()
     }
 }

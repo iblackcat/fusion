@@ -52,9 +52,9 @@ class ImageRectification: NSObject {
         return (p1_rec, p2_rec)
     }
  
-    func imageRectification(frame1: Frame, frame2: Frame) -> (tex1: GLuint?, tex2: GLuint?) {
-        var tex1: GLuint? = nil
-        var tex2: GLuint? = nil
+    func imageRectification(frame1: Frame, frame2: Frame) -> (Frame?, Frame?, Float?) {
+        var frame1_rec: Frame? = nil
+        var frame2_rec: Frame? = nil
         
         var p1rec: CameraPose? = nil
         var p2rec: CameraPose? = nil
@@ -83,13 +83,19 @@ class ImageRectification: NSObject {
         //rectification for image1
         _renderer1._program.use()
         
+        gl_error = glGetError()
+        print("glerrori1:", gl_error)
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
         glUniformMatrix4fv(GLint(_renderer1._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), &trans1)
         glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(GLenum(GL_TEXTURE_2D), frame1._texture)
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "tex")), 0)
+        gl_error = glGetError()
+        print("glerrori2:", gl_error)
         _renderer1.renderScene()
+        gl_error = glGetError()
+        print("glerrori3:", gl_error)
         
         //rectification for image2
         glUniform1i(GLint(_renderer2._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
@@ -99,10 +105,11 @@ class ImageRectification: NSObject {
         glBindTexture(GLenum(GL_TEXTURE_2D), frame2._texture)
         _renderer2.renderScene()
         
-        tex1 = _renderer1._rtt._texture
-        tex2 = _renderer2._rtt._texture
-    
-        return (tex1, tex2)
+        frame1_rec = Frame.init(texture: _renderer1._rtt._texture, pose: p1rec!)
+        frame2_rec = Frame.init(texture: _renderer2._rtt._texture, pose: p2rec!)
+        let bl = fabsf(length(p1rec!.center - p2rec!.center))
+        
+        return (frame1_rec, frame2_rec, bl)
     }
     
     func getUIImage() -> (img1: UIImage?, img2: UIImage?) {
@@ -110,5 +117,9 @@ class ImageRectification: NSObject {
         let img2 = _renderer2.getFramebufferImage()
         
         return (img1, img2)
+    }
+    
+    func getUIImage1() -> UIImage? {
+        return _renderer1.getFramebufferImage()
     }
 }

@@ -1,12 +1,16 @@
+#version 300 es
 
 precision mediump float;
 
-varying mediump vec2 st;
+in vec2 st;
 
 uniform int         m_w;
 uniform int         m_h;
+
 uniform mat4        Trans;
 uniform sampler2D   tex;
+
+out vec4 FragColor;
 
 void main() {
     
@@ -16,12 +20,12 @@ void main() {
     vec4 m = Trans * vec4((st.x - dx/float(2.0)) * float(m_w), (st.y - dy/float(2.0)) * float(m_h), 1.0, 0.0);
     vec2 xy = vec2((m[0] / m[2]) / float(m_w) + dx/2.0, (m[1] / m[2]) / float(m_h) + dy/2.0);
     
-    vec4 C;
     if (xy.x < 0.0 || xy.y < 0.0 || xy.x > 1.0 || xy.y > 1.0) {
-        C = vec4(0.0, 0.0, 0.0, 0.0);
+        FragColor = vec4(0.0, 0.0, 0.0, 0.0);
     } else {
-        C = texture2D(tex, xy);
+        FragColor = texture(tex, vec2(xy.x, xy.y));
     }
-    gl_FragColor = C;
+    
+    FragColor = texture(tex, st);
 }
 

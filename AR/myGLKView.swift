@@ -205,10 +205,10 @@ class myGLKView: GLKView, GLKViewDelegate {
     
     func configureGLKView() {
         
-        self.drawableDepthFormat = GLKViewDrawableDepthFormat.format24
+        self.drawableDepthFormat = GLKViewDrawableDepthFormat.formatNone
         self.contentScaleFactor = UIScreen.main.scale
         self.delegate = self
-        self.context = EAGLContext.init(api: EAGLRenderingAPI.openGLES2)!
+        self.context = EAGLContext.init(api: EAGLRenderingAPI.openGLES3)!
         EAGLContext.setCurrent(self.context)
         glClearColor(0, 0, 0, 1)
         
