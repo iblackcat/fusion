@@ -78,7 +78,8 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
             
             let snapimage = sceneView.snapshot()
             let transform = currentFrame.camera.transform
-            let pose = CameraPose.init(A: g_intrinsics, trans: transform)
+            let test_pose = CameraPose.init(A: g_intrinsics, trans: transform)
+            let pose = CameraPose.init(A: g_intrinsics, R: test_pose.R.inverse, t: -test_pose.R.inverse*test_pose.t)
             
             if frameid % 20 == 0 {
                 let (img1, img2) = fusionBrain.newFrame(image: snapimage, pose: pose)
@@ -149,7 +150,9 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         var translation = matrix_identity_float4x4
         translation.columns.3.z = -0.1
         cubeNode.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
-        Cube.Pose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
+        
+        let test_pose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
+        Cube.Pose = CameraPose.init(A: g_intrinsics, R: test_pose.R.inverse, t: -test_pose.R.inverse*test_pose.t)
         
         isPreviewStart = true
     }

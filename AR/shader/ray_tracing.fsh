@@ -92,6 +92,7 @@ void main()
         //20170531
         if (x < 0.0 || x > float(ModelSize)-1.0 || y < 0.0 || y > float(ModelSize)-1.0 || z < 0.0 || z > float(ModelSize)-1.0) s_tmp = float(ModelSize);
         else {
+            /*
             if (y < 5.0 && z < 5.0) {
                 FragColor = vec4(1.0, 0.0, 0.0, 1.0);
                 tag = 1;
@@ -104,7 +105,7 @@ void main()
             } else {
                 FragColor = vec4(0.8, 0.8, 0.2, 1.0);
                 tag = 1;
-            }
+            }*/
             //FragColor = vec4(x/float(ModelSize-1), y/float(ModelSize-1), z/float(ModelSize-1), 1.0);
             
             xx = (float(int(z)%SmallSize) * float(ModelSize) + x + 0.5) / float(ModelTexSize);
@@ -136,12 +137,12 @@ void main()
             //if (tmp < 0.0 || weight/2 < weight_tmp || weight < 5) {tmp = s_tmp; continue; }
             
             if (flag == 0) { //I
-                /*if (tmp != float(ModelSize) && s_tmp != 0.0) {
+                if (tmp != float(ModelSize) && s_tmp != 0.0) {
                     FragColor = (vec4(C.rgb, 1.0)*(-tmp) + vec4(last_C.rgb, 1.0)*(s_tmp)) / (s_tmp-tmp);
                     //FragColor = vec4(1.0,0.0,0.0,1.0);
                 }
                 else FragColor = vec4(C.rgb, 1.0);
-                */
+                
             }
             //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
             

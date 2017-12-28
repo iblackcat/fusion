@@ -52,7 +52,7 @@ class FramePool: NSObject {
         }
     
         //?!
-        return frames[(head-3+MAX_FRAME_NUM)%MAX_FRAME_NUM]
+        return frames[(head-1+MAX_FRAME_NUM)%MAX_FRAME_NUM]
         
         
         var bestScore: Float = framePairScore(frame1: frame, frame2: frames[0]!)

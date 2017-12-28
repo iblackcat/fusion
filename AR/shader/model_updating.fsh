@@ -82,23 +82,23 @@ void main()
         //if (0 == 1) {ci = vec4(0.0, 0.0, 0.0, 0.0); di = 0.0;}
         
         if (si <= float(-Mu) || si > float(Mu)) FragColor = texture(model, st);
-        if (si <= float(-Mu)) FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-        else if (si > float(Mu)) FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        //if (si <= float(-Mu)) FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+        //else if (si > float(Mu)) FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         else {
             // R G B W/S
             vec4 last = texture(model, st);
             float W = floor(last.a * 255.0 / 8.0);
             float S = float(int(last.a * 255.0) % 8) * (-1.0) + float(Mu);
             
-            //if (W < 30.0) {
+            if (W < 30.0) {
                 last.r = (last.r * W + ci.r * wi) / (W + wi);
                 last.g = (last.g * W + ci.g * wi) / (W + wi);
                 last.b = (last.b * W + ci.b * wi) / (W + wi);
-                //int newW = int(W + wi);
-                //int newS = int((S * W + si * wi) / (W + wi)) * (-1) + Mu; //Todo: use float instead of int
-                //last.a = float(newW * 8 + newS) / 255.0;
-            //}
-            FragColor = vec4(last.rgb, 1.0);
+                int newW = int(W + wi);
+                int newS = int((S * W + si * wi) / (W + wi)) * (-1) + Mu; //Todo: use float instead of int
+                last.a = float(newW * 8 + newS) / 255.0;
+            }
+            //FragColor = vec4(last.rgb, 1.0);
             /*
             // R G B W
             if (isC_flag == 1) {
