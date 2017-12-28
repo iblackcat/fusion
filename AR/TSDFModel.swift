@@ -13,8 +13,9 @@ public let ModelTexSize = 4096
 public let ModelSize = 256
 
 
-
-
+public let viewx = matrix_float3x3(float3(1,0,0),float3(0,-1,0),float3(0,0,-1))
+public let viewz = matrix_float3x3(float3(-1,0,0),float3(0,-1,0),float3(0,0,1))
+public let view_x = matrix_float3x3(float3(-1,0,0),float3(0,1,0),float3(0,0,1))
 
 class TSDFModel {
     
@@ -56,7 +57,8 @@ class TSDFModel {
         //let transform = matrix_float4x4([float4(R[0][0], R[0][1], R[0][2], Float(0)), float4(R[1][0], R[1][1], R[1][2], Float(0)), float4(R[2][0], R[2][1], R[2][2], Float(0)), float4(t[0], t[1], t[2], Float(0))])
         
         //let T = CameraPose.init(A: g_intrinsics, trans: transform)
-        let T = CameraPose.init(A: g_intrinsics, R: R, t: t)
+        //let T = CameraPose.init(A: g_intrinsics, R: view_x*matrix_float3x3.init(float3(1,0,0),float3(0,1,0),float3(0,0,1)), t: view_x*float3(0,0,-0.5))
+        let T = CameraPose.init(A: g_intrinsics, R: view_x*R*view_x, t: view_x*t)
         let invQ: matrix_float3x3 = T.Q.inverse
         
         var iQ = [GLfloat](repeating: GLfloat(0.0), count: Int(9))
@@ -74,6 +76,9 @@ class TSDFModel {
                 axis_tmp = i
             }
         }
+        print("axis: ", axis_tmp)
+        print("R: ", R)
+        print("t: ", t)
         
         glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
         glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "m_h")), GLint(g_height))

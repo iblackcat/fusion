@@ -9,6 +9,8 @@
 import Foundation
 import GLKit
 
+
+
 class myGLTexture2D: NSObject {
     var _width: GLsizei = 0
     var _height: GLsizei = 0
@@ -139,24 +141,24 @@ class myGLRenderer: NSObject {
     func renderScene() {
         
         glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
-        var gl_error = glGetError()
-        print("glerror r1:", gl_error)
+        //var gl_error = glGetError()
+        //print("glerror r1:", gl_error)
         
         glViewport(0, 0, _rtt._width, _rtt._height)
         _rtt.bind()
-        gl_error = glGetError()
-        print("glerror r2:", gl_error)
+        //gl_error = glGetError()
+        //print("glerror r2:", gl_error)
         
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexBufferID)
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexTexCoordID)
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), vertexIndicesBufferID)
         
-        gl_error = glGetError()
-        print("glerror r3:", gl_error)
+        //gl_error = glGetError()
+        //print("glerror r3:", gl_error)
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(numIndices*3), GLenum(GL_UNSIGNED_SHORT), nil);
         
-        gl_error = glGetError()
-        print("glerror r4:", gl_error)
+        //gl_error = glGetError()
+        //print("glerror r4:", gl_error)
         _rtt.unbind_to_lastfbo()
     }
     
