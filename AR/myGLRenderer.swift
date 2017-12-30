@@ -46,7 +46,7 @@ class myGLRenderer: NSObject {
     
     init(width: GLsizei, height: GLsizei, internalformat: Int32, format: Int32, type: Int32, textures: Int = 1) {
         switch format {
-        case Int32(GL_RED), Int32(GL_GREEN), Int32(GL_BLUE): _numChannels = 1;
+        case Int32(GL_RED), Int32(GL_GREEN), Int32(GL_BLUE), Int32(GL_LUMINANCE): _numChannels = 1;
         case Int32(GL_RGB): _numChannels = 3;
         case Int32(GL_RGBA): _numChannels = 4;
         default:
@@ -177,6 +177,39 @@ class myGLRenderer: NSObject {
             print("glerror:", gl_error)
         }
         return anUIImage
+    }
+    
+    func getFramebufferImageU8() -> UIImage? {
+        let byteLength = Int(_rtt._width * _rtt._height)
+        var bytes = [UInt8](repeating: 0, count: Int(byteLength))
+        var bytesInt = [UInt32](repeating: 0, count: Int(byteLength))
+        
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _rtt._framebuffer)
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(_rtt._format), GLenum(_rtt._type), &bytes)
+        
+        for i in 0..<_rtt._height {
+            for j in 0..<_rtt._width {
+                bytesInt[i*_rtt._width+j] = 0xff << 24 | bytes[i*_rtt._width+j] << 16 | bytes[i*_rtt._width+j] << 8 | bytes[i*_rtt._width+j]
+            }
+        }
+        
+        var anUIImage: UIImage! = nil
+        
+        let gl_error = glGetError()
+        if gl_error == 0 {
+            anUIImage = getUIImagefromRGBABuffer(src_buffer: &bytesInt, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror:", gl_error)
+        }
+        return anUIImage
+    }
+    
+    func changeFBOColorBuffer(textureid: GLuint) {
+        _rtt.changeColorBuffer(textureid: textureid)
+    }
+    
+    func changeFBOColorBuffer(textureid: GLuint, textureid1: GLuint) {
+        _rtt.changeColorBuffer(textureid: textureid, textureid1: textureid1)
     }
 }
 

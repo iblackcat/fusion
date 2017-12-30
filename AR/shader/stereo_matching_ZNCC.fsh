@@ -1,3 +1,4 @@
+#version 300 es
 
 precision mediump float;
 
@@ -9,7 +10,12 @@ uniform int step;
 uniform int radius; // patch = (2*radius+1)x(2*radius+1)
 uniform sampler2D tex;
 uniform sampler2D tex2;
-out float FragColor;  
+
+int d_max = 64;
+float MAX_FLOAT = float(1000000);
+float pC[64];
+
+out float FragColor;
 
 int d_max = 64;
 float MAX_FLOAT = 1000000;
@@ -46,8 +52,8 @@ int compute_avgs(float x, float y) {
 			yy = y + j*dy;
 			x0 = st.x + i*dx;
 			if (xx < 0.0 || xx > 1.0 || yy < 0.0 || yy > 1.0 || x0 < 0.0 || x0 > 1.0) continue;
-			i1 = texture2D(tex,  vec2(x0, yy));
-			i2 = texture2D(tex2, vec2(xx, yy));
+			i1 = texture(tex,  vec2(x0, yy));
+			i2 = texture(tex2, vec2(xx, yy));
 			gray1 = rgba2gray(i1);
 			gray2 = rgba2gray(i2);
 			
@@ -60,8 +66,8 @@ int compute_avgs(float x, float y) {
 	}
 	
 	if (n != 0) {
-		avg_i1p /= n;
-		avg_i2p /= n;
+		avg_i1p /= float(n);
+		avg_i2p /= float(n);
 	}
 	return n;
 }
@@ -80,8 +86,8 @@ float compute_sigs(float x, float y) {
 			yy = y + j*dy;
 			x0 = st.x + i*dx;
 			if (xx < 0.0 || xx > 1.0 || yy < 0.0 || yy > 1.0 || x0 < 0.0 || x0 > 1.0) continue;
-			i1 = texture2D(tex,  vec2(x0, yy));
-			i2 = texture2D(tex2, vec2(xx, yy));
+			i1 = texture(tex,  vec2(x0, yy));
+			i2 = texture(tex2, vec2(xx, yy));
 			gray1 = rgba2gray(i1);
 			gray2 = rgba2gray(i2);
 			
@@ -138,32 +144,29 @@ void main()
 					break;
 				}
 			}
-			sig_i1p = sqrt(sig_i1p / n);
-			sig_i2p = sqrt(sig_i2p / n);
+			sig_i1p = sqrt(sig_i1p / float(n));
+			sig_i2p = sqrt(sig_i2p / float(n));
 			C = -C / (sig_i1p * sig_i2p);
 			pC[k] = C;
 
 			if (C < min_C) {
 				min_C = C;
-				delta = k+1;
+				delta = float(k+1);
 			}
 		}
 		
-		//sub-pixel accuracy
-		int iDelta = int(delta);
-		if (delta >= 2.0 && delta <= d_max-1.0 && pC[iDelta-1] != MAX_FLOAT && pC[iDelta-2] != MAX_FLOAT && pC[iDelta] != MAX_FLOAT) {
-			float d = delta;
-			float y0 = pC[iDelta-2], y1 = pC[iDelta-1], y2 = pC[iDelta];
-			float a = y2 / 2.0 - y1 + y0 / 2.0;
-			float b = y2 - y1 - a - 2.0 * a*d;
-			if (a > 0.0) {
-				delta = -b / (2.0 * a);
-			}
-		}
-		else {
-			delta = 100;
-		}
-		
+        //sub-pixel accuracy
+        int iDelta = int(delta);
+        if (delta >= 2.0 && delta <= float(d_max)-1.0 && pC[iDelta-1] != MAX_FLOAT && pC[iDelta-2] != MAX_FLOAT && pC[iDelta] != MAX_FLOAT) {
+            float d = delta;
+            float y0 = pC[iDelta-2], y1 = pC[iDelta-1], y2 = pC[iDelta];
+            float a = y2 / 2.0 - y1 + y0 / 2.0;
+            float b = y2 - y1 - a - 2.0 * a*d;
+            if (a > 0.0) {
+                delta = -b / (2.0 * a);
+            }
+        }
+        
 		if (delta == 0.0) FragColor = 0.0; //vec4(0.0, 0.0, 0.0, 0.0);
 		else {
 			FragColor = delta; //float2depth_rgba(delta);

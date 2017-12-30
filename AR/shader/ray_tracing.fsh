@@ -15,7 +15,7 @@ uniform mat3 invQ;
 uniform vec3 q;
  
 uniform sampler2D model;
-
+uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
@@ -44,8 +44,6 @@ float vec3Multi(vec3 a, vec3 b) {
 
 void main()
 {
-    
-    
     int SmallSize = ModelTexSize / ModelSize;
     
     float tmp = float(ModelSize);
@@ -116,18 +114,23 @@ void main()
             float tmp_z = z - floor(z);
             last_SW = SW;
             last_C  = C ;
-            //SW = texture(modelSW, vec2(xx, yy));// * (1.0 - tmp_z) + texture(modelSW, vec2(xx1, yy1)) * tmp_z;
             C  = texture(model , vec2(xx, yy)) * (1.0 - tmp_z) + texture(model , vec2(xx1, yy1)) * tmp_z;
+            SW = texture(model1, vec2(xx, yy)) * (1.0 - tmp_z) + texture(model1, vec2(xx1, yy1)) * tmp_z;
             
             s_tmp = SW.r*255.0 - 128.0;
-            weight = SW.b*255.0;
+            weight = C.a*255.0;
+            
+            if (C.a != 0.0) {
+                FragColor = C;
+                tag = 1;
+            }
             
             //vec4 p = Rot * vec4(WorldCoord(x,y,z), 1.0);
             last_depth = depth;
             //depth = p.z;
             depth = zm;
             
-            if (SW.a*255.0 + 1e-6 < 1.0) {
+            if (C.a == 0.0) {
                 s_tmp = float(ModelSize);
             }
             
@@ -168,7 +171,7 @@ void main()
             }
             */
             weight_tmp = weight;
-            //return ;
+            return ;
         }
         //else if (tmp < 0.0 && s_tmp >= 0.0 && s_tmp < Mu) {
         //return ;

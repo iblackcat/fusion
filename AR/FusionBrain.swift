@@ -81,9 +81,12 @@ class FusionBrain: NSObject{
             let (frame1_rec, frame2_rec, bl) = imageRect.imageRectification(frame1: frame, frame2: frame2!)
             let (tex3, tex4) = stereoMatch.disparityEstimation(tex1: frame1_rec?._texture, tex2: frame2_rec?._texture)
             let tex_depth = stereoMatch.depthEstimation(tex1: tex3, tex2: tex4, baseline: bl!)
-            //outimage1 = stereoMatch.getDepthUIImage()
-            //(outimage1, outimage2) = stereoMatch.getUIImage()
-            tsdfModel.model_updating(tex_color: frame1_rec?._texture, tex_depth: tex_depth, pose: frame1_rec?._pose)
+            outimage2 = stereoMatch.getDepthUIImage()
+            //(outimage1, outimage2) = imageRect.getUIImage()
+            //print(frame_num)
+            //if frame_num == 1 {
+                tsdfModel.model_updating(tex_color: frame1_rec?._texture, tex_depth: tex_depth, pose: frame1_rec?._pose)
+            //}
             tsdfModel.ray_tracing(pose: pose)
             /*if (frame_num % 5) == 0 {
                 outimage1 = tsdfModel.getModelUIImage()

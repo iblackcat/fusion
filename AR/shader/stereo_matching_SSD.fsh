@@ -15,7 +15,7 @@ int d_max = 64;
 float MAX_FLOAT = float(1000000);
 float pC[64];
 
-out vec4 FragColor;
+out float FragColor;
 
 void main()  
 {  
@@ -32,7 +32,7 @@ void main()
 	int n = 0;
 	float delta = 0.0;
 	float C, min_C = MAX_FLOAT;
-	if (i1.a == 0.0 || (i1.r == 0.0 && i1.g == 0.0 && i1.b == 0.0)) FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    if (i1.a == 0.0 || (i1.r == 0.0 && i1.g == 0.0 && i1.b == 0.0)) FragColor = 0.0; //vec4(0.0, 0.0, 0.0, 0.0);
 	else {
         
 		delta = 0.0;
@@ -77,7 +77,7 @@ void main()
 		}
 		
         if (delta == 0.0) {
-            FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+            FragColor = 0.0; //vec4(0.0, 0.0, 0.0, 0.0);
         }
 		else {
 			//int test = int(double(delta) * 256.0 * 256.0);
@@ -87,7 +87,8 @@ void main()
 			//float R = float(test / 256 / 256) / 255.0;
 
 			//gl_FragColor = delta;
-            FragColor = vec4(delta/255.0, delta/255.0, delta/255.0, 1.0);
+            //FragColor = vec4(delta/255.0, delta/255.0, delta/255.0, 1.0);
+            FragColor = delta;
 		}
         //gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 	}
