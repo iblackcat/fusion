@@ -13,9 +13,9 @@ uniform int Axis;
 uniform int flag;
 uniform mat3 invQ;
 uniform vec3 q;
- 
-uniform sampler2D model;
 
+uniform sampler2D model;
+uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
@@ -44,8 +44,6 @@ float vec3Multi(vec3 a, vec3 b) {
 
 void main()
 {
-    
-    
     int SmallSize = ModelTexSize / ModelSize;
     
     float tmp = float(ModelSize);
@@ -93,19 +91,19 @@ void main()
         if (x < 0.0 || x > float(ModelSize)-1.0 || y < 0.0 || y > float(ModelSize)-1.0 || z < 0.0 || z > float(ModelSize)-1.0) s_tmp = float(ModelSize);
         else {
             /*
-            if (y < 5.0 && z < 5.0) {
-                FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-                tag = 1;
-            } else if (x < 5.0 && z < 5.0) {
-                FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-                tag = 1;
-            } else if (x < 5.0 && y < 5.0) {
-                FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-                tag = 1;
-            } else {
-                FragColor = vec4(0.8, 0.8, 0.2, 1.0);
-                tag = 1;
-            }*/
+             if (y < 5.0 && z < 5.0) {
+             FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+             tag = 1;
+             } else if (x < 5.0 && z < 5.0) {
+             FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+             tag = 1;
+             } else if (x < 5.0 && y < 5.0) {
+             FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+             tag = 1;
+             } else {
+             FragColor = vec4(0.8, 0.8, 0.2, 1.0);
+             tag = 1;
+             }*/
             //FragColor = vec4(x/float(ModelSize-1), y/float(ModelSize-1), z/float(ModelSize-1), 1.0);
             
             xx = (float(int(z)%SmallSize) * float(ModelSize) + x + 0.5) / float(ModelTexSize);
@@ -116,18 +114,23 @@ void main()
             float tmp_z = z - floor(z);
             last_SW = SW;
             last_C  = C ;
-            //SW = texture(modelSW, vec2(xx, yy));// * (1.0 - tmp_z) + texture(modelSW, vec2(xx1, yy1)) * tmp_z;
             C  = texture(model , vec2(xx, yy)) * (1.0 - tmp_z) + texture(model , vec2(xx1, yy1)) * tmp_z;
+            SW = texture(model1, vec2(xx, yy)) * (1.0 - tmp_z) + texture(model1, vec2(xx1, yy1)) * tmp_z;
             
             s_tmp = SW.r*255.0 - 128.0;
-            weight = SW.b*255.0;
+            weight = C.a*255.0;
+            
+            if (C.a != 0.0) {
+                FragColor = C;
+                tag = 1;
+            }
             
             //vec4 p = Rot * vec4(WorldCoord(x,y,z), 1.0);
             last_depth = depth;
             //depth = p.z;
             depth = zm;
             
-            if (SW.a*255.0 + 1e-6 < 1.0) {
+            if (C.a == 0.0) {
                 s_tmp = float(ModelSize);
             }
             
@@ -148,27 +151,27 @@ void main()
             
             
             /*
-            else if (flag == 1) { //Y
-                if (tmp != float(ModelSize) && s_tmp != 0.0) {
-                    FragColor = (vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
-                }
-                else FragColor = vec4(SW.b, SW.b, SW.b, 1.0);
-            }
-            else { //D
-                float dinter = depth;
-                if (tmp != float(ModelSize) && s_tmp != 0.0) {
-                    dinter = (depth*(-tmp) + last_depth*(s_tmp) ) / (s_tmp - tmp);
-                }
-                int test = int(dinter * 256.0 * 256.0);
-                float A = float(1.0) / 255.0;
-                float B = float((test) % 256) / 255.0;
-                float G = float((test/ 256) % 256) / 255.0;
-                float R = float(test / 256 / 256) / 255.0;
-                FragColor = vec4(R, G, B, A);
-            }
-            */
+             else if (flag == 1) { //Y
+             if (tmp != float(ModelSize) && s_tmp != 0.0) {
+             FragColor = (vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
+             }
+             else FragColor = vec4(SW.b, SW.b, SW.b, 1.0);
+             }
+             else { //D
+             float dinter = depth;
+             if (tmp != float(ModelSize) && s_tmp != 0.0) {
+             dinter = (depth*(-tmp) + last_depth*(s_tmp) ) / (s_tmp - tmp);
+             }
+             int test = int(dinter * 256.0 * 256.0);
+             float A = float(1.0) / 255.0;
+             float B = float((test) % 256) / 255.0;
+             float G = float((test/ 256) % 256) / 255.0;
+             float R = float(test / 256 / 256) / 255.0;
+             FragColor = vec4(R, G, B, A);
+             }
+             */
             weight_tmp = weight;
-            //return ;
+            return ;
         }
         //else if (tmp < 0.0 && s_tmp >= 0.0 && s_tmp < Mu) {
         //return ;
@@ -179,4 +182,3 @@ void main()
     
     
 }
-

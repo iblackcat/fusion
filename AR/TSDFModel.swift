@@ -21,6 +21,7 @@ class TSDFModel {
     
     var _renderer_updating: myGLRenderer! = nil
     var _last_model_texture: myGLTexture2D! = nil
+    var _last_model_texture1: myGLTexture2D! = nil
     
     var _renderer_raytracing: myGLRenderer! = nil
     
@@ -36,17 +37,46 @@ class TSDFModel {
     ]
     
     init() {
+        //model updating init
         _renderer_updating = myGLRenderer.init(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         _renderer_updating.setShaderFile(vshname: "default", fshname: "model_updating")
         
         _last_model_texture = myGLRenderer.createTexture(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _last_model_texture1 = myGLRenderer.createTexture(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_R8), format: Int32(GL_RED), type: Int32(GL_UNSIGNED_BYTE))
+        swapModelTextures()
+        _renderer_updating._rtt.checkFBOstatus()
         
+        model_init()
+        
+        //ray tracing init
         _renderer_raytracing = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         _renderer_raytracing.setShaderFile(vshname: "default", fshname: "ray_tracing")
+    }
+    
+    func model_init() {
+        _renderer_updating._program.use()
         
-        //swap texture
+        var trans = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
+        
+        for i in 0...3 {
+            for j in 0...3 {
+                trans[i*4+j] = GLfloat(0.0)
+            }
+        }
+        
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "m_w")), GLint(0))
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "m_h")), GLint(0))
+        glUniform1f(GLint(_renderer_updating._program.uniformIndex(uniformName: "edgeLength")), GLfloat(0.1*Cube.Scale))
+        glUniformMatrix4fv(GLint(_renderer_updating._program.uniformIndex(uniformName: "Q")), 1, GLboolean(GL_FALSE), &trans)
+        glActiveTexture(GLenum(GL_TEXTURE0))
+        glBindTexture(GLenum(GL_TEXTURE_2D), _last_model_texture1._textureid)
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "tex_image")), 0)
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "tex_depth")), 0)
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "model")), 0)
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "model1")), 0)
+        _renderer_updating.renderScene()
+        
         swapModelTextures()
-        
     }
     
     func ray_tracing(pose: CameraPose!) {
@@ -80,9 +110,9 @@ class TSDFModel {
                 axis_tmp = i
             }
         }
-        print("axis: ", axis_tmp)
-        print("R: ", R)
-        print("t: ", t)
+        //print("axis: ", axis_tmp)
+        //print("R: ", R)
+        //print("t: ", t)
         
         glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
         glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
@@ -95,6 +125,9 @@ class TSDFModel {
         glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(GLenum(GL_TEXTURE_2D), _last_model_texture._textureid)
         glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "model")), 0)
+        glActiveTexture(GLenum(GL_TEXTURE1))
+        glBindTexture(GLenum(GL_TEXTURE_2D), _last_model_texture1._textureid)
+        glUniform1i(GLint(_renderer_raytracing._program.uniformIndex(uniformName: "model1")), 1)
         
         _renderer_raytracing.renderScene()
     }
@@ -107,13 +140,13 @@ class TSDFModel {
         
         let R: matrix_float3x3 = pose.R * Cube.Pose.R.inverse
         let t: float3 = pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
-        let transform = matrix_float4x4([float4(R[0][0], R[0][1], R[0][2], Float(0)), float4(R[1][0], R[1][1], R[1][2], Float(0)), float4(R[2][0], R[2][1], R[2][2], Float(0)), float4(t[0], t[1], t[2], Float(0))])
+        let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: R, t: t)
         
         var trans = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
         
         for i in 0...3 {
             for j in 0...3 {
-                trans[i*4+j] = GLfloat(transform[i][j])
+                trans[i*4+j] = GLfloat(pose.transform[i][j])
             }
         }
         
@@ -138,6 +171,9 @@ class TSDFModel {
         glActiveTexture(GLenum(GL_TEXTURE2))
         glBindTexture(GLenum(GL_TEXTURE_2D), _last_model_texture._textureid)
         glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "model")), 2)
+        glActiveTexture(GLenum(GL_TEXTURE3))
+        glBindTexture(GLenum(GL_TEXTURE_2D), _last_model_texture1._textureid)
+        glUniform1i(GLint(_renderer_updating._program.uniformIndex(uniformName: "model1")), 3)
         //gl_error = glGetError()
         //print("glerror5:", gl_error)
         
@@ -150,9 +186,17 @@ class TSDFModel {
     }
     
     func swapModelTextures() {
+        let swap_texture = _renderer_updating._rtt._texture
+        let swap_texture1 = _renderer_updating._rtt._texture1
+        _renderer_updating._rtt.changeColorBuffer(tex: _last_model_texture._textureid, tex1: _last_model_texture1._textureid)
+        _last_model_texture._textureid = swap_texture
+        _last_model_texture1._textureid = swap_texture1
+        
+        /*
         let _swap_texture = _last_model_texture._textureid
         _last_model_texture._textureid = _renderer_updating._rtt._texture
         _renderer_updating._rtt._texture = _swap_texture
+        */
     }
     
     func getUIImage() -> UIImage? {

@@ -178,6 +178,33 @@ class myGLRenderer: NSObject {
         }
         return anUIImage
     }
+    
+    func getFramebufferImageGray() -> UIImage? {
+        let byteLength = Int(_rtt._width * _rtt._height)
+        var bytes = [UInt8](repeating: 0, count: Int(byteLength))
+        var b2 = [UInt32](repeating: 0, count: Int(byteLength))
+        
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _rtt._framebuffer)
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(_rtt._format), GLenum(_rtt._type), &bytes)
+        
+        for i in 0..<byteLength {
+            let tmp:UInt32 = UInt32(bytes[i])
+            b2[i] = UInt32(0xff) << 24
+            b2[i] |= (tmp << 16)
+            b2[i] |= tmp << 8
+            b2[i] |= tmp
+        }
+        
+        var anUIImage: UIImage! = nil
+        
+        let gl_error = glGetError()
+        if gl_error == 0 {
+            anUIImage = getUIImagefromRGBABuffer(src_buffer: &b2, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror:", gl_error)
+        }
+        return anUIImage
+    }
 }
 
 public func getUIImagefromRGBABuffer(src_buffer: UnsafeMutableRawPointer, width: Int, height: Int) -> UIImage {
@@ -188,6 +215,26 @@ public func getUIImagefromRGBABuffer(src_buffer: UnsafeMutableRawPointer, width:
     alphaInfo = .noneSkipLast
     
     bmcontext = CGContext(data: src_buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: colorSpace!, bitmapInfo: alphaInfo.rawValue)!
+    let rgbImage: CGImage? = bmcontext!.makeImage()
+    if rgbImage == nil {
+        fatalError()
+    }
+    let anUIImage = UIImage(cgImage: rgbImage!)
+    return anUIImage
+}
+
+public func getUIImagefromGrayBuffer(src_buffer: UnsafeMutableRawPointer, width: Int, height: Int) -> UIImage {
+    var colorSpace: CGColorSpace?
+    var alphaInfo: CGImageAlphaInfo!
+    var bmcontext: CGContext?
+    colorSpace = CGColorSpaceCreateDeviceGray()
+    alphaInfo = .none
+    
+    if colorSpace == nil {
+        fatalError()
+    }
+    
+    bmcontext = CGContext(data: src_buffer, width: width, height: height, bitsPerComponent: 2, bytesPerRow: width, space: colorSpace!, bitmapInfo: alphaInfo.rawValue)!
     let rgbImage: CGImage? = bmcontext!.makeImage()
     if rgbImage == nil {
         fatalError()

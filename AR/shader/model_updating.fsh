@@ -3,7 +3,9 @@
 precision mediump float;
 
 in vec2 st;
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor0;
+layout(location = 1) out float FragColor1;
+//out vec4 FragColor[2];
 
 uniform int m_w;
 uniform int m_h;
@@ -12,10 +14,11 @@ uniform mat4 Q;
 uniform sampler2D tex_image;  //Image
 uniform sampler2D tex_depth; //Depth
 uniform sampler2D model;
+uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 3;
+int Mu = 30;
 
 vec3 WorldCoord(float x, float y, float z) {
     //return vec3(0.0, 0.0, 0.0);
@@ -25,6 +28,12 @@ vec3 WorldCoord(float x, float y, float z) {
 
 void main()
 {
+    if (m_w == 0 && m_h == 0) {
+        FragColor0 = vec4(0.0, 0.0, 0.0, 0.0);
+        FragColor1 = 0.0;
+        return;
+    }
+    
     int SmallSize = ModelTexSize / ModelSize;
     
     float mdx = 1.0 / float(ModelTexSize);
@@ -53,26 +62,46 @@ void main()
     vec4 d3 = texture(tex_depth, vec2(ix_, iy));
     vec4 d4 = texture(tex_depth, vec2(ix_, iy_));
     
+     vec4 test_C = texture(model, st);
+     vec4 test_SW = texture(model1, st);
+     
+     float Muf = float(Mu+1) + edgeLength;
+     vec4 hhhhh = texture(tex_image, vec2(x, y)) + texture(tex_depth, vec2(x, y));
+     
+     FragColor0 = texture(tex_image, vec2(x, y));
+     //FragColor0 = vec4(1.0, 0.0, 0.0, 1.0);
+     FragColor1 = 1.0;
+     return;
+    
     //FragColor = vec4((wP.z*10.0+128.0)/255.0, (wP.z*10.0+128.0)/255.0, (wP.z*10.0+128.0)/255.0, 1.0);
     //FragColor = vec4((i)/255.0, (i)/255.0, (i)/255.0, 1.0);
     //FragColor = vec4(((vP.z - 10.0) + 128.0) / 255.0, 0.0, 0.0, 1.0);//SW;
     //return;
     
-    if (x < 0.0 || x > 1.0 || y < 0.0 || y > 1.0) FragColor = vec4(0.5, 0.5, 0.5, 1.0);//texture(model, st);//
-    else if (d1.a < 1.0/255.0 || d2.a < 1.0/255.0 || d3.a < 1.0/255.0 || d4.a < 1.0/255.0) //todo: 1e-6?
-        FragColor = vec4(0.0, 0.0, 1.0, 1.0); //texture(model, st); //
+    if (x < 0.0 || x > 1.0 || y < 0.0 || y > 1.0) { //FragColor = vec4(0.5, 0.5, 0.5, 1.0);//texture(model, st);//
+        FragColor0 = texture(model, st);
+        vec4 tmp = texture(model1, st);
+        FragColor1 = tmp.r;
+    }
+    //else if (d1.a < 1.0/255.0 || d2.a < 1.0/255.0 || d3.a < 1.0/255.0 || d4.a < 1.0/255.0) //todo: 1e-6?
+    //    FragColor = vec4(0.0, 0.0, 1.0, 1.0); //texture(model, st); //
+    else if (d1.r == 0.0 || d2.r == 0.0 || d3.r == 0.0 || d4.r == 0.0) {
+        FragColor0 = texture(model, st);
+        vec4 tmp = texture(model1, st);
+        FragColor1 = tmp.r;
+    }
     else {
         vec4 D = texture(tex_depth, vec2(x, y));
         //float di = float((double(D.r)*255.0 *256.0*256.0 + double(D.g)*255.0 *256.0 + double(D.b)*255.0) / (256*256));
-        //di = D.r*8.0; 
+        //di = D.r*8.0;
         
-        float di = D.r * 60.0;
+        float di = D.r;// * 60.0;
         /*
-        if (D.r > 80) {
-            FragColor = texture2D(model, st);
-            return;
-        }
-        */
+         if (D.r > 80) {
+         FragColor = texture2D(model, st);
+         return;
+         }
+         */
         float si = (di - vP.z) * float(ModelSize) / edgeLength;
         vec4 ci = texture(tex_image, vec2(x, y));
         float wi = 1.0;
@@ -81,52 +110,97 @@ void main()
         //si = (di - 10.0);
         //if (0 == 1) {ci = vec4(0.0, 0.0, 0.0, 0.0); di = 0.0;}
         
-        if (si <= float(-Mu) || si > float(Mu)) FragColor = texture(model, st);
-        //if (si <= float(-Mu)) FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-        //else if (si > float(Mu)) FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        if (si < float(-Mu) || si > float(Mu)) {
+            FragColor0 = texture(model, st);
+            vec4 tmp = texture(model1, st);
+            FragColor1 = tmp.r;
+        }/*
+          if (si <= float(-Mu)) {
+          FragColor0 = vec4(0.0, 1.0, 0.0, 1.0);
+          //FragColor1 = texture(model1, st);
+          }
+          else if (si > float(Mu)) {
+          FragColor0 = vec4(1.0, 0.0, 0.0, 1.0);
+          //FragColor1 = texture(model1, st);
+          }*/
         else {
-            // R G B W/S
-            vec4 last = texture(model, st);
-            float W = floor(last.a * 255.0 / 8.0);
-            float S = float(int(last.a * 255.0) % 8) * (-1.0) + float(Mu);
+            //FragColor0 = texture(model, st);
+            //FragColor1 = texture(model1, st);
+            float S, W;
+            // R G B W
             
-            if (W < 30.0) {
-                last.r = (last.r * W + ci.r * wi) / (W + wi);
-                last.g = (last.g * W + ci.g * wi) / (W + wi);
-                last.b = (last.b * W + ci.b * wi) / (W + wi);
-                int newW = int(W + wi);
-                int newS = int((S * W + si * wi) / (W + wi)) * (-1) + Mu; //Todo: use float instead of int
-                last.a = float(newW * 8 + newS) / 255.0;
+            vec4 C = texture(model, st);
+            W = C.a * 255.0;
+            if (W < 50.0) {
+                C.r = (C.r * W + ci.r * wi) / (W + wi);
+                C.g = (C.g * W + ci.g * wi) / (W + wi);
+                C.b = (C.b * W + ci.b * wi) / (W + wi);
+                C.a = (W + wi) / 255.0;
             }
+            FragColor0 = C;
+            
+            /*
+             // R G B W/S
+             vec4 last = texture(model, st);
+             float W = floor(last.a * 255.0 / 8.0);
+             float S = float(int(last.a * 255.0) % 8) * (-1.0) + float(Mu);
+             
+             if (W < 30.0) {
+             last.r = (last.r * W + ci.r * wi) / (W + wi);
+             last.g = (last.g * W + ci.g * wi) / (W + wi);
+             last.b = (last.b * W + ci.b * wi) / (W + wi);
+             int newW = int(W + wi);
+             int newS = int((S * W + si * wi) / (W + wi)) * (-1) + Mu; //Todo: use float instead of int
+             last.a = float(newW * 8 + newS) / 255.0;
+             }
+             */
+            
+            // S x x x
+            
+            vec4 SW = texture(model1, st);
+            S = SW.r * 255.0 - 128.0;
+            
+            if (W < 50.0) {
+                SW.r = ((S * W + si * wi) / (W + wi) + 128.0) / 255.0;
+            }
+            FragColor1 = SW.r;
+            
+            
             //FragColor = vec4(last.rgb, 1.0);
             /*
-            // R G B W
-            if (isC_flag == 1) {
-                vec4 C  = texture(model, st);
-                float W = C.a * 255;
-                // todo: W > 50 ?
-                if (W < 50) {
-                    C.r = (C.r * W + ci.r * wi) / (W + wi);
-                    C.g = (C.g * W + ci.g * wi) / (W + wi);
-                    C.b = (C.b * W + ci.b * wi) / (W + wi);
-                    C.a = (W + wi) / 255;
-                }
-                FragColor = vec4(C.xyz, 1.0); //C;
-            }
-            // S x W F
-            else {
-                vec4 SW = texture(model, st);
-                float S = SW.r * 255.0 - 128.0;
-                float W = SW.b * 255.0;
-                
-                if (W < 50) {
-                    SW.r = ((S * W + si * wi) / (W + wi) + 128.0) / 255.0;
-                    SW.b = (W + wi) / 255;
-                    SW.a = 1.0 / 255;
-                }
-                FragColor = vec4(SW.r, 0.0, SW.b, SW.a);//SW;
-            }
-            */
+             // R G B W
+             if (isC_flag == 1) {
+             vec4 C  = texture(model, st);
+             float W = C.a * 255;
+             // todo: W > 50 ?
+             if (W < 50) {
+             C.r = (C.r * W + ci.r * wi) / (W + wi);
+             C.g = (C.g * W + ci.g * wi) / (W + wi);
+             C.b = (C.b * W + ci.b * wi) / (W + wi);
+             C.a = (W + wi) / 255;
+             }
+             FragColor = vec4(C.xyz, 1.0); //C;
+             }
+             // S x W F
+             else {
+             vec4 SW = texture(model, st);
+             float S = SW.r * 255.0 - 128.0;
+             float W = SW.b * 255.0;
+             
+             if (W < 50) {
+             SW.r = ((S * W + si * wi) / (W + wi) + 128.0) / 255.0;
+             SW.b = (W + wi) / 255;
+             SW.a = 1.0 / 255;
+             }
+             FragColor = vec4(SW.r, 0.0, SW.b, SW.a);//SW;
+             }
+             */
+            
+            FragColor0 = vec4(0.0, 1.0, 0.0, 1.0);
+            FragColor1 = 1.0;
         }
+        FragColor0 = ci;
+        FragColor1 = 1.0;
     }
 }
+

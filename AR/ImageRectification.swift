@@ -83,19 +83,19 @@ class ImageRectification: NSObject {
         //rectification for image1
         _renderer1._program.use()
         
-        gl_error = glGetError()
-        print("glerrori1:", gl_error)
+        //gl_error = glGetError()
+        //print("glerrori1:", gl_error)
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "m_h")), GLint(g_height))
         glUniformMatrix4fv(GLint(_renderer1._program!.uniformIndex(uniformName: "Trans")), 1, GLboolean(GL_FALSE), &trans1)
         glActiveTexture(GLenum(GL_TEXTURE0))
         glBindTexture(GLenum(GL_TEXTURE_2D), frame1._texture)
         glUniform1i(GLint(_renderer1._program.uniformIndex(uniformName: "tex")), 0)
-        gl_error = glGetError()
-        print("glerrori2:", gl_error)
+        //gl_error = glGetError()
+        //print("glerrori2:", gl_error)
         _renderer1.renderScene()
-        gl_error = glGetError()
-        print("glerrori3:", gl_error)
+        //gl_error = glGetError()
+        //print("glerrori3:", gl_error)
         
         //rectification for image2
         glUniform1i(GLint(_renderer2._program.uniformIndex(uniformName: "m_w")), GLint(g_width))

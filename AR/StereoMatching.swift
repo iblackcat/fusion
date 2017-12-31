@@ -25,13 +25,14 @@ class StereoMatching {
         _renderer2.setShaderFile(vshname: "default", fshname: "stereo_matching_SSD")
         */
         
-        _renderer1 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        //todo 2path to 1path
+        _renderer1 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R16F_EXT), format: Int32(GL_RED), type: Int32(GL_HALF_FLOAT_OES))
         _renderer1.setShaderFile(vshname: "default", fshname: "stereo_matching_SSD")
         
-        _renderer2 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer2 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R16F_EXT), format: Int32(GL_RED), type: Int32(GL_HALF_FLOAT_OES))
         _renderer2.setShaderFile(vshname: "default", fshname: "stereo_matching_SSD")
         
-        _renderer_depth = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer_depth = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R16F_EXT), format: Int32(GL_RED), type: Int32(GL_HALF_FLOAT_OES))
         _renderer_depth.setShaderFile(vshname: "default", fshname: "lrcheck_and_triangulation")
     }
     
@@ -93,6 +94,6 @@ class StereoMatching {
     }
     
     func getDepthUIImage() -> UIImage? {
-        return _renderer_depth.getFramebufferImage()
+        return _renderer_depth.getFramebufferImageGray()
     }
 }

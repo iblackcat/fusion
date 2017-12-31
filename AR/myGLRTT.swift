@@ -48,6 +48,7 @@ class myGLRTT {
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
         glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
         if (textures == 2) {
+            /*
             glGenTextures(1, &_texture1)
             glBindTexture(GLenum(GL_TEXTURE_2D), _texture1)
             glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(_internalformat), width, height, 0, GLenum(_format), GLenum(_type), nil)
@@ -58,22 +59,46 @@ class myGLRTT {
             glBindTexture(GLenum(GL_TEXTURE_2D), 0)
             
             glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
+            */
             glDrawBuffers(GLsizei(2),[GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_COLOR_ATTACHMENT1)])
         }
         //glDrawBuffers(GLsizei(1),[GLenum(GL_COLOR_ATTACHMENT0)])
         //let bytes = [GLuint](repeating: 0, count: Int(4))
         //glClearBufferuiv(GLenum(GL_COLOR), 0, bytes)
         
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLenum(_lastfbo))
+        checkFBOstatus()
+    }
+    
+    func changeColorBuffer(tex: GLuint) {
+        bind()
+        _texture = tex
+        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
+        unbind_to_lastfbo()
+    }
+    
+    func changeColorBuffer(tex: GLuint, tex1: GLuint) {
+        bind()
+        _texture = tex
+        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
+        
+        _texture1 = tex1
+        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture, 0)
+        unbind_to_lastfbo()
+    }
+    
+    func checkFBOstatus() {
+        bind()
         let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
         if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
-            print("ERROR: generate frame buffer error with", width, height, "status:", status)
+            print("status:", status)
             print("right: ", GLenum(GL_FRAMEBUFFER_COMPLETE))
             
             print("GL_FRAMEBUFFER_UNDEFINED:",GLenum(GL_FRAMEBUFFER_UNDEFINED))
             print("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:",GLenum(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT))
             print("GL_FRAMEBUFFER_UNSUPPORTED:",GLenum(GL_FRAMEBUFFER_UNSUPPORTED))
         }
-        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), GLenum(_lastfbo))
+        unbind_to_lastfbo()
     }
     
     func bind() {
