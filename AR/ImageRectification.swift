@@ -41,8 +41,10 @@ class ImageRectification: NSObject {
         let v1 = p1.center - p2.center
         let v2 = cross(p1.R.transpose[2], v1)
         let v3 = cross(v1, v2)
+        //p1.R.transpose[2]
         
         let R = matrix_float3x3([normalize(v1),normalize(v2),normalize(v3)]).transpose
+        //let R = matrix_float3x3.init(rows: [normalize(v1),normalize(v2),normalize(v3)])
         let t1 = -(R * p1.center)
         p1_rec = CameraPose.init(A: A, R: R, t: t1)
         //print("p1.center:", p1.center)
@@ -63,8 +65,8 @@ class ImageRectification: NSObject {
         var p1rec: CameraPose? = nil
         var p2rec: CameraPose? = nil
         (p1rec, p2rec) = ImageRectification.getRectifiedPose(p1: frame1._pose, p2: frame2._pose)
-        let rect_tran1: matrix_float3x3 = frame1._pose.Q * p1rec!.Q.inverse
-        let rect_tran2: matrix_float3x3 = frame2._pose.Q * p2rec!.Q.inverse
+        let rect_tran1: matrix_float3x3 = g_intrinsics*viewx*frame1._pose.R * p1rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame1._pose.Q * p1rec!.Q.inverse
+        let rect_tran2: matrix_float3x3 = g_intrinsics*viewx*frame2._pose.R * p2rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame2._pose.Q * p2rec!.Q.inverse
         
         var trans1 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
         var trans2 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))

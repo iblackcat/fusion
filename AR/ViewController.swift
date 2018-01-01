@@ -24,6 +24,7 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     
     var isPreviewStart: Bool = false
     var isFusionStart: Bool = false
+    var isFusionDone: Bool = false
     var cubeNode: SCNNode!
     
     var cubePose: CameraPose! = nil
@@ -93,6 +94,20 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
                 }
             }
             
+        } else if isFusionDone {
+            if frameid % 5 == 0 {
+                let (img1, img2) = fusionBrain.FusionDone()
+                if img1 != nil && img2 != nil {
+                    DepthView.image = img1
+                    WeightView.image = img2
+                } else if img1 != nil {
+                    DepthView.image = img1
+                } else if img2 != nil {
+                    WeightView.image = img2
+                } else {
+                    print("???")
+                }
+            }
         }
         frameid = (frameid + 1) % 400
         //print(currentFrame.camera.imageResolution)
@@ -167,10 +182,18 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
     }
     
     @IBAction func stopFusion(_ sender: UIButton) {
+        if !isFusionStart {
+            return
+        }
+        
+        isFusionStart = false
+        isFusionDone  = true
+        fusionBrain.frame_num = 0
+        /*
         let img: UIImage? = fusionBrain.tsdfModel.getModelUIImage()
         if img != nil {
             WeightView.image = img
-        }
+        }*/
         //isFusionStart = false
     }
     

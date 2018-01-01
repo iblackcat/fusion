@@ -48,10 +48,10 @@ class myGLRTT {
         glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _framebuffer)
         glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
         if (textures == 2) {
-            /*
+            
             glGenTextures(1, &_texture1)
             glBindTexture(GLenum(GL_TEXTURE_2D), _texture1)
-            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(_internalformat), width, height, 0, GLenum(_format), GLenum(_type), nil)
+            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(GL_R8), width, height, 0, GLenum(GL_RED), GLenum(_type), nil)
             glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
             glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
             glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
@@ -59,7 +59,7 @@ class myGLRTT {
             glBindTexture(GLenum(GL_TEXTURE_2D), 0)
             
             glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
-            */
+ 
             glDrawBuffers(GLsizei(2),[GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_COLOR_ATTACHMENT1)])
         }
         //glDrawBuffers(GLsizei(1),[GLenum(GL_COLOR_ATTACHMENT0)])
@@ -83,7 +83,8 @@ class myGLRTT {
         glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), _texture, 0)
         
         _texture1 = tex1
-        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture, 0)
+        glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
+        
         unbind_to_lastfbo()
     }
     

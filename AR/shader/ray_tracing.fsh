@@ -19,7 +19,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 3;
+int Mu = 4;
 
 float MAX_FLOAT = 10000000.0;
 
@@ -90,7 +90,7 @@ void main()
         //20170531
         if (x < 0.0 || x > float(ModelSize)-1.0 || y < 0.0 || y > float(ModelSize)-1.0 || z < 0.0 || z > float(ModelSize)-1.0) s_tmp = float(ModelSize);
         else {
-            
+            /*
              if (y < 5.0 && z < 5.0) {
              FragColor = vec4(1.0, 0.0, 0.0, 1.0);
              tag = 1;
@@ -103,7 +103,7 @@ void main()
              } else {
              FragColor = vec4(0.8, 0.8, 0.2, 1.0);
              tag = 1;
-             }
+             }*/
             //FragColor = vec4(x/float(ModelSize-1), y/float(ModelSize-1), z/float(ModelSize-1), 1.0);
             
             xx = (float(int(z)%SmallSize) * float(ModelSize) + x + 0.5) / float(ModelTexSize);
@@ -120,7 +120,7 @@ void main()
             s_tmp = SW.r*255.0 - 128.0;
             weight = C.a*255.0;
             /*
-            if (C.a != 0.0) {
+            if (SW.r*255.0 > 128.0) {
                 FragColor = C;
                 tag = 1;
             }
@@ -137,7 +137,7 @@ void main()
         }
         if ((tmp > 0.0 && s_tmp <= 0.0) && (tmp < float(Mu) && s_tmp > -float(Mu))) {// && tmp < Mu && s_tmp > -Mu)) { //|| (tmp < 0.0 && s_tmp >= 0.0 && s_tmp < Mu)) {
             
-            //if (tmp < 0.0 || weight/2 < weight_tmp || weight < 5) {tmp = s_tmp; continue; }
+            if (tmp < 0.0 || weight/2.0 < weight_tmp || weight < 5.0) {tmp = s_tmp; continue; }
             
             if (flag == 0) { //I
                 if (tmp != float(ModelSize) && s_tmp != 0.0) {

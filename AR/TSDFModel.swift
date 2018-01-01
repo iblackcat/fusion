@@ -38,13 +38,13 @@ class TSDFModel {
     
     init() {
         //model updating init
-        _renderer_updating = myGLRenderer.init(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer_updating = myGLRenderer.init(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE), textures: 2)
         _renderer_updating.setShaderFile(vshname: "default", fshname: "model_updating")
         
         _last_model_texture = myGLRenderer.createTexture(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
         _last_model_texture1 = myGLRenderer.createTexture(width: GLsizei(ModelTexSize), height: GLsizei(ModelTexSize), internalformat: Int32(GL_R8), format: Int32(GL_RED), type: Int32(GL_UNSIGNED_BYTE))
-        swapModelTextures()
-        _renderer_updating._rtt.checkFBOstatus()
+        //swapModelTextures()
+        //_renderer_updating._rtt.checkFBOstatus()
         
         model_init()
         
@@ -79,12 +79,19 @@ class TSDFModel {
         swapModelTextures()
     }
     
-    func ray_tracing(pose: CameraPose!) {
+    func ray_tracing(pose: CameraPose!, tag: Bool = true) {
         _renderer_raytracing._program.use()
         
-        let R: matrix_float3x3 = pose.R * Cube.Pose.R.inverse
-        let t: float3 = pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
+        var R: matrix_float3x3
+        var t: float3
         
+        if tag {
+            R = pose.R * Cube.Pose.R.inverse
+            t = pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
+        } else {
+            R = pose.R
+            t = pose.t
+        }
         //let R: matrix_float3x3 = pose.R.inverse*Cube.Pose.R//pose.R * Cube.Pose.R.inverse
         //let t: float3 = pose.R.inverse*Cube.Pose.t - pose.R.inverse*pose.t//pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
         //let transform = matrix_float4x4([float4(R[0][0], R[0][1], R[0][2], Float(0)), float4(R[1][0], R[1][1], R[1][2], Float(0)), float4(R[2][0], R[2][1], R[2][2], Float(0)), float4(t[0], t[1], t[2], Float(0))])
@@ -105,8 +112,8 @@ class TSDFModel {
         var tmp = Float(0.0)
         var axis_tmp = Int(0)
         for i in 0..<6 {
-            if dot(T.R[2], m_axis[i]) > tmp {
-                tmp = dot(T.R[2], m_axis[i])
+            if dot(T.R.transpose[2], m_axis[i]) > tmp {
+                tmp = dot(T.R.transpose[2], m_axis[i])
                 axis_tmp = i
             }
         }
@@ -140,15 +147,18 @@ class TSDFModel {
         
         let R: matrix_float3x3 = pose.R * Cube.Pose.R.inverse
         let t: float3 = pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
-        let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: R, t: t)
+        let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: viewx*R, t: viewx*t)
         
         var trans = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
         
-        for i in 0...3 {
-            for j in 0...3 {
-                trans[i*4+j] = GLfloat(pose.transform[i][j])
+        for i in 0..<3 {
+            for j in 0..<3 {
+                trans[i*4+j] = GLfloat(pose.Q[i][j])
             }
+            trans[3*4+i] = GLfloat(pose.q[i])
+            trans[i*4+3] = GLfloat(0.0)
         }
+        trans[3*4+3] = GLfloat(1.0)
         
         //gl_error = glGetError()
         //print("glerror1:", gl_error)
@@ -183,6 +193,7 @@ class TSDFModel {
         //print("glerror6:", gl_error)
         
         swapModelTextures()
+        _renderer_updating._rtt.checkFBOstatus()
     }
     
     func swapModelTextures() {

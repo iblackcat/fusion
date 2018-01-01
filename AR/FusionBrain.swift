@@ -32,6 +32,7 @@ extension matrix_float4x4 {
     }
 }
 */
+public let rot_y = matrix_float3x3(float3(0.998027,0,-0.0627905),float3(0,1,0),float3(0.0627905,0,0.998027))
 
 class Cube: NSObject{
     static var Scale: Float = 1.0
@@ -59,6 +60,7 @@ class FusionBrain: NSObject{
     var gl_error: GLenum = 0
     
     var frame_num: Int = 0
+    var last_R: matrix_float3x3 = matrix_float3x3(float3(-1,0,0),float3(0,-1,0),float3(0,0,1))
     
     override init() {
         super.init()
@@ -82,14 +84,14 @@ class FusionBrain: NSObject{
             let (tex3, tex4) = stereoMatch.disparityEstimation(tex1: frame1_rec?._texture, tex2: frame2_rec?._texture)
             let tex_depth = stereoMatch.depthEstimation(tex1: tex3, tex2: tex4, baseline: bl!)
             //outimage1 = stereoMatch.getDepthUIImage()
-            (outimage1, outimage2) = imageRect.getUIImage()
+            //(outimage1, outimage2) = imageRect.getUIImage()
             tsdfModel.model_updating(tex_color: frame1_rec?._texture, tex_depth: tex_depth, pose: frame1_rec?._pose)
-            //tsdfModel.ray_tracing(pose: pose)
-            tsdfModel.ray_tracing(pose: frame1_rec?._pose)
+            tsdfModel.ray_tracing(pose: pose)
+            //tsdfModel.ray_tracing(pose: frame1_rec?._pose)
             /*if (frame_num % 5) == 0 {
                 outimage1 = tsdfModel.getModelUIImage()
             }*/
-            outimage2 = tsdfModel.getUIImage()
+            outimage1 = tsdfModel.getUIImage()
         }
         
         frame_num = (frame_num+1) % 400
@@ -97,6 +99,20 @@ class FusionBrain: NSObject{
         //tsdfModel.model_updating()
         
         framePool.addFrame(newframe: frame)
+        return (outimage1, outimage2)
+    }
+    
+    func FusionDone() -> (UIImage?, UIImage?) {
+        var outimage1: UIImage? = nil
+        var outimage2: UIImage? = nil
+        
+        last_R = rot_y * last_R
+        let pose = CameraPose.init(A: g_intrinsics, R: last_R, t: float3(0,0,0.2*Cube.Scale))
+        
+        tsdfModel.ray_tracing(pose: pose, tag: false)
+        outimage2 = tsdfModel.getUIImage()
+        frame_num = (frame_num+1) % 100
+        
         return (outimage1, outimage2)
     }
 }

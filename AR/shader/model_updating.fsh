@@ -18,7 +18,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 30;
+int Mu = 4;
 
 vec3 WorldCoord(float x, float y, float z) {
     //return vec3(0.0, 0.0, 0.0);
@@ -61,7 +61,7 @@ void main()
     vec4 d2 = texture(tex_depth, vec2(ix, iy_));
     vec4 d3 = texture(tex_depth, vec2(ix_, iy));
     vec4 d4 = texture(tex_depth, vec2(ix_, iy_));
-    
+    /*
      vec4 test_C = texture(model, st);
      vec4 test_SW = texture(model1, st);
      
@@ -72,7 +72,7 @@ void main()
      //FragColor0 = vec4(1.0, 0.0, 0.0, 1.0);
      FragColor1 = 1.0;
      return;
-    
+    */
     //FragColor = vec4((wP.z*10.0+128.0)/255.0, (wP.z*10.0+128.0)/255.0, (wP.z*10.0+128.0)/255.0, 1.0);
     //FragColor = vec4((i)/255.0, (i)/255.0, (i)/255.0, 1.0);
     //FragColor = vec4(((vP.z - 10.0) + 128.0) / 255.0, 0.0, 0.0, 1.0);//SW;
@@ -159,6 +159,7 @@ void main()
             
             vec4 SW = texture(model1, st);
             S = SW.r * 255.0 - 128.0;
+            //S = SW.r - 128.0;
             
             if (W < 50.0) {
                 SW.r = ((S * W + si * wi) / (W + wi) + 128.0) / 255.0;
@@ -196,11 +197,11 @@ void main()
              }
              */
             
-            FragColor0 = vec4(0.0, 1.0, 0.0, 1.0);
-            FragColor1 = 1.0;
+            //FragColor0 = vec4(0.0, 1.0, 0.0, 1.0);
+            //FragColor1 = 1.0;
         }
-        FragColor0 = ci;
-        FragColor1 = 1.0;
+        //FragColor0 = ci;
+        //FragColor1 = 1.0;
     }
 }
 
