@@ -82,13 +82,14 @@ class FusionBrain: NSObject{
             let (tex3, tex4) = stereoMatch.disparityEstimation(tex1: frame1_rec?._texture, tex2: frame2_rec?._texture)
             let tex_depth = stereoMatch.depthEstimation(tex1: tex3, tex2: tex4, baseline: bl!)
             //outimage1 = stereoMatch.getDepthUIImage()
-            //(outimage1, outimage2) = stereoMatch.getUIImage()
+            (outimage1, outimage2) = imageRect.getUIImage()
             tsdfModel.model_updating(tex_color: frame1_rec?._texture, tex_depth: tex_depth, pose: frame1_rec?._pose)
-            tsdfModel.ray_tracing(pose: pose)
+            //tsdfModel.ray_tracing(pose: pose)
+            tsdfModel.ray_tracing(pose: frame1_rec?._pose)
             /*if (frame_num % 5) == 0 {
                 outimage1 = tsdfModel.getModelUIImage()
             }*/
-            outimage1 = tsdfModel.getUIImage()
+            outimage2 = tsdfModel.getUIImage()
         }
         
         frame_num = (frame_num+1) % 400

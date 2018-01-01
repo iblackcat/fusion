@@ -45,9 +45,13 @@ class ImageRectification: NSObject {
         let R = matrix_float3x3([normalize(v1),normalize(v2),normalize(v3)]).transpose
         let t1 = -(R * p1.center)
         p1_rec = CameraPose.init(A: A, R: R, t: t1)
+        //print("p1.center:", p1.center)
+        //print("p1_rec.center:", p1_rec?.center)
         
         let t2 = -(R * p2.center)
         p2_rec = CameraPose.init(A: A, R: R, t: t2)
+        //print("p2.center:", p2.center)
+        //print("p2_rec.center:", p2_rec?.center)
         
         return (p1_rec, p2_rec)
     }

@@ -90,7 +90,7 @@ void main()
         //20170531
         if (x < 0.0 || x > float(ModelSize)-1.0 || y < 0.0 || y > float(ModelSize)-1.0 || z < 0.0 || z > float(ModelSize)-1.0) s_tmp = float(ModelSize);
         else {
-            /*
+            
              if (y < 5.0 && z < 5.0) {
              FragColor = vec4(1.0, 0.0, 0.0, 1.0);
              tag = 1;
@@ -103,7 +103,7 @@ void main()
              } else {
              FragColor = vec4(0.8, 0.8, 0.2, 1.0);
              tag = 1;
-             }*/
+             }
             //FragColor = vec4(x/float(ModelSize-1), y/float(ModelSize-1), z/float(ModelSize-1), 1.0);
             
             xx = (float(int(z)%SmallSize) * float(ModelSize) + x + 0.5) / float(ModelTexSize);
@@ -119,12 +119,12 @@ void main()
             
             s_tmp = SW.r*255.0 - 128.0;
             weight = C.a*255.0;
-            
+            /*
             if (C.a != 0.0) {
                 FragColor = C;
                 tag = 1;
             }
-            
+            */
             //vec4 p = Rot * vec4(WorldCoord(x,y,z), 1.0);
             last_depth = depth;
             //depth = p.z;
