@@ -80,9 +80,9 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
             let snapimage = sceneView.snapshot()
             let transform = currentFrame.camera.transform
             let test_pose = CameraPose.init(A: g_intrinsics, trans: transform)
-            let pose = CameraPose.init(A: g_intrinsics, R: test_pose.R.inverse, t: -test_pose.R.inverse*test_pose.t)
+            let pose = CameraPose.init(A: g_intrinsics, R: viewx*test_pose.R.inverse, t: -viewx*test_pose.R.inverse*test_pose.t)
             
-            if frameid % 20 == 0 {
+            if frameid % 25 == 0 {
                 let (img1, img2) = fusionBrain.newFrame(image: snapimage, pose: pose)
                 if img1 != nil && img2 != nil {
                     DepthView.image = img1
@@ -167,7 +167,7 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         cubeNode.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
         
         let test_pose = CameraPose.init(A: g_intrinsics, trans: cubeNode.simdTransform)
-        Cube.Pose = CameraPose.init(A: g_intrinsics, R: test_pose.R.inverse, t: -test_pose.R.inverse*test_pose.t)
+        Cube.Pose = CameraPose.init(A: g_intrinsics, R: viewx*test_pose.R.inverse, t: -viewx*test_pose.R.inverse*test_pose.t)
         
         isPreviewStart = true
     }

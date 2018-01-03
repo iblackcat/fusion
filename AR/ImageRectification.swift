@@ -65,8 +65,10 @@ class ImageRectification: NSObject {
         var p1rec: CameraPose? = nil
         var p2rec: CameraPose? = nil
         (p1rec, p2rec) = ImageRectification.getRectifiedPose(p1: frame1._pose, p2: frame2._pose)
-        let rect_tran1: matrix_float3x3 = g_intrinsics*viewx*frame1._pose.R * p1rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame1._pose.Q * p1rec!.Q.inverse
-        let rect_tran2: matrix_float3x3 = g_intrinsics*viewx*frame2._pose.R * p2rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame2._pose.Q * p2rec!.Q.inverse
+        //let rect_tran1: matrix_float3x3 = g_intrinsics*viewx*frame1._pose.R * p1rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame1._pose.Q * p1rec!.Q.inverse
+        //let rect_tran2: matrix_float3x3 = g_intrinsics*viewx*frame2._pose.R * p2rec!.R.transpose*viewx.inverse*g_intrinsics.inverse//frame2._pose.Q * p2rec!.Q.inverse
+        let rect_tran1: matrix_float3x3 = frame1._pose.Q * p1rec!.Q.inverse
+        let rect_tran2: matrix_float3x3 = frame2._pose.Q * p2rec!.Q.inverse
         
         var trans1 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
         var trans2 = [GLfloat](repeating: GLfloat(0.0), count: Int(16))

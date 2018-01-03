@@ -16,6 +16,7 @@ class myGLRTT {
     var _framebuffer: GLuint = 0
     var _texture: GLuint = 0
     var _texture1: GLuint = 0
+    var _texture2: GLuint = 0
     var _lastfbo: GLint = 0
     
     var _internalformat: Int32 = 0
@@ -61,6 +62,29 @@ class myGLRTT {
             glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
  
             glDrawBuffers(GLsizei(2),[GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_COLOR_ATTACHMENT1)])
+        } else if (textures == 3) {
+            
+            glGenTextures(1, &_texture1)
+            glBindTexture(GLenum(GL_TEXTURE_2D), _texture1)
+            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(GL_R8), width, height, 0, GLenum(GL_RED), GLenum(_type), nil)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
+            glBindTexture(GLenum(GL_TEXTURE_2D), 0)
+            glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_TEXTURE_2D), _texture1, 0)
+            
+            glGenTextures(1, &_texture2)
+            glBindTexture(GLenum(GL_TEXTURE_2D), _texture2)
+            glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GLint(GL_R8), width, height, 0, GLenum(GL_RED), GLenum(_type), nil)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GL_CLAMP_TO_EDGE)
+            glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GL_CLAMP_TO_EDGE)
+            glBindTexture(GLenum(GL_TEXTURE_2D), 0)
+            glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT2), GLenum(GL_TEXTURE_2D), _texture2, 0)
+            
+            glDrawBuffers(GLsizei(3),[GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_COLOR_ATTACHMENT1), GLenum(GL_COLOR_ATTACHMENT2)])
         }
         //glDrawBuffers(GLsizei(1),[GLenum(GL_COLOR_ATTACHMENT0)])
         //let bytes = [GLuint](repeating: 0, count: Int(4))

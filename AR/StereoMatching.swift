@@ -32,7 +32,7 @@ class StereoMatching {
         _renderer2 = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R16F_EXT), format: Int32(GL_RED), type: Int32(GL_HALF_FLOAT_OES))
         _renderer2.setShaderFile(vshname: "default", fshname: "stereo_matching_SSD")
         
-        _renderer_depth = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R16F_EXT), format: Int32(GL_RED), type: Int32(GL_HALF_FLOAT_OES))
+        _renderer_depth = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_R8), format: Int32(GL_RED), type: Int32(GL_UNSIGNED_BYTE))
         _renderer_depth.setShaderFile(vshname: "default", fshname: "lrcheck_and_triangulation")
     }
     
@@ -40,7 +40,7 @@ class StereoMatching {
         _renderer_depth._program.use()
         
         glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "m_w")), GLint(g_width))
-        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "max_diff")), GLint(5))
+        glUniform1i(GLint(_renderer_depth._program.uniformIndex(uniformName: "max_diff")), GLint(3))
         glUniform1f(GLint(_renderer_depth._program.uniformIndex(uniformName: "baseline")), GLfloat(baseline))
         glUniform1f(GLint(_renderer_depth._program.uniformIndex(uniformName: "fx")), GLfloat(g_intrinsics[0][0]))
         

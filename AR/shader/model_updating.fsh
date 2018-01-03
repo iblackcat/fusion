@@ -18,7 +18,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 4;
+int Mu = 3;
 
 vec3 WorldCoord(float x, float y, float z) {
     //return vec3(0.0, 0.0, 0.0);

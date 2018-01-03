@@ -60,7 +60,7 @@ class FusionBrain: NSObject{
     var gl_error: GLenum = 0
     
     var frame_num: Int = 0
-    var last_R: matrix_float3x3 = matrix_float3x3(float3(-1,0,0),float3(0,-1,0),float3(0,0,1))
+    var last_R: matrix_float3x3 = matrix_float3x3(float3(1,0,0),float3(0,1,0),float3(0,0,1))
     
     override init() {
         super.init()
@@ -91,7 +91,8 @@ class FusionBrain: NSObject{
             /*if (frame_num % 5) == 0 {
                 outimage1 = tsdfModel.getModelUIImage()
             }*/
-            outimage1 = tsdfModel.getUIImage()
+            //outimage1 = tsdfModel.getUIImage()
+            (outimage1, outimage2) = tsdfModel.getAllImage()
         }
         
         frame_num = (frame_num+1) % 400

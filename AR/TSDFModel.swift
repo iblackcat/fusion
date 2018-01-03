@@ -49,7 +49,7 @@ class TSDFModel {
         model_init()
         
         //ray tracing init
-        _renderer_raytracing = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE))
+        _renderer_raytracing = myGLRenderer.init(width: GLsizei(g_width), height: GLsizei(g_height), internalformat: Int32(GL_RGBA), format: Int32(GL_RGBA), type: Int32(GL_UNSIGNED_BYTE), textures: 3)
         _renderer_raytracing.setShaderFile(vshname: "default", fshname: "ray_tracing")
     }
     
@@ -99,7 +99,8 @@ class TSDFModel {
         //let T = CameraPose.init(A: g_intrinsics, trans: transform)
         //let T = CameraPose.init(A: g_intrinsics, R: view_x*matrix_float3x3.init(float3(1,0,0),float3(0,1,0),float3(0,0,1)), t: view_x*float3(0,0,-0.5))
         //let T = CameraPose.init(A: g_intrinsics, R: view_x*R*view_x, t: view_x*t)
-        let T = CameraPose.init(A: g_intrinsics, R: viewx*R, t: viewx*t)
+        //let T = CameraPose.init(A: g_intrinsics, R: viewx*R, t: viewx*t)
+        let T = CameraPose.init(A: g_intrinsics, R: R, t: t)
         let invQ: matrix_float3x3 = T.Q.inverse
         
         var iQ = [GLfloat](repeating: GLfloat(0.0), count: Int(9))
@@ -112,12 +113,12 @@ class TSDFModel {
         var tmp = Float(0.0)
         var axis_tmp = Int(0)
         for i in 0..<6 {
-            if dot(T.R.transpose[2], m_axis[i]) > tmp {
-                tmp = dot(T.R.transpose[2], m_axis[i])
+            if dot(R.transpose[2], m_axis[i]) > tmp {
+                tmp = dot(R.transpose[2], m_axis[i])
                 axis_tmp = i
             }
         }
-        //print("axis: ", axis_tmp)
+        print("axis: ", axis_tmp)
         //print("R: ", R)
         //print("t: ", t)
         
@@ -147,7 +148,8 @@ class TSDFModel {
         
         let R: matrix_float3x3 = pose.R * Cube.Pose.R.inverse
         let t: float3 = pose.t - pose.R * Cube.Pose.R.inverse * Cube.Pose.t
-        let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: viewx*R, t: viewx*t)
+        //let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: viewx*R, t: viewx*t)
+        let pose: CameraPose = CameraPose.init(A: g_intrinsics, R: R, t: t)
         
         var trans = [GLfloat](repeating: GLfloat(0.0), count: Int(16))
         
@@ -214,6 +216,12 @@ class TSDFModel {
         let img = _renderer_raytracing.getFramebufferImage()
         
         return img
+    }
+    
+    func getAllImage() -> (UIImage?, UIImage?) {
+        let (i1, i2, i3) = _renderer_raytracing.getFramebuffer3Images()
+        
+        return (i1, i2)
     }
     
     func getModelUIImage() -> UIImage? {

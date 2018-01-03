@@ -3,7 +3,10 @@
 precision mediump float;
 
 in vec2 st;
-out vec4 FragColor;
+//out vec4 FragColor;
+layout(location = 0) out vec4 FragColor0;
+layout(location = 1) out float FragColor1;
+layout(location = 2) out float FragColor2;
 
 uniform int m_w;
 uniform int m_h;
@@ -19,7 +22,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 4;
+int Mu = 3;
 
 float MAX_FLOAT = 10000000.0;
 
@@ -69,7 +72,9 @@ void main()
     
     float x, y, z, xm, ym, zm, test;
     
-    FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+    FragColor0 = vec4(0.5, 0.5, 0.5, 1.0);
+    FragColor1 = 0.0;
+    FragColor2 = 0.0;
     int tag = 0;
     
     for (int k = start; k != end; k += step)
@@ -101,7 +106,7 @@ void main()
              FragColor = vec4(0.0, 0.0, 1.0, 1.0);
              tag = 1;
              } else {
-             FragColor = vec4(0.8, 0.8, 0.2, 1.0);
+             FragColor = vec4(x/255.0, y/255.0, z/255.0, 1.0);
              tag = 1;
              }*/
             //FragColor = vec4(x/float(ModelSize-1), y/float(ModelSize-1), z/float(ModelSize-1), 1.0);
@@ -139,39 +144,42 @@ void main()
             
             if (tmp < 0.0 || weight/2.0 < weight_tmp || weight < 5.0) {tmp = s_tmp; continue; }
             
-            if (flag == 0) { //I
+            if (flag == 0) { } //I
+                
                 if (tmp != float(ModelSize) && s_tmp != 0.0) {
-                    FragColor = (vec4(C.rgb, 1.0)*(-tmp) + vec4(last_C.rgb, 1.0)*(s_tmp)) / (s_tmp-tmp);
+                    FragColor0 = (vec4(C.rgb, 1.0)*(-tmp) + vec4(last_C.rgb, 1.0)*(s_tmp)) / (s_tmp-tmp);
                     //FragColor = vec4(1.0,0.0,0.0,1.0);
                 }
-                else FragColor = vec4(C.rgb, 1.0);
+                else FragColor0 = vec4(C.rgb, 1.0);
                 
-            }
+            
             //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
             
             
-            /*
-             else if (flag == 1) { //Y
-             if (tmp != float(ModelSize) && s_tmp != 0.0) {
-             FragColor = (vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
-             }
-             else FragColor = vec4(SW.b, SW.b, SW.b, 1.0);
-             }
-             else { //D
-             float dinter = depth;
-             if (tmp != float(ModelSize) && s_tmp != 0.0) {
-             dinter = (depth*(-tmp) + last_depth*(s_tmp) ) / (s_tmp - tmp);
-             }
-             int test = int(dinter * 256.0 * 256.0);
-             float A = float(1.0) / 255.0;
-             float B = float((test) % 256) / 255.0;
-             float G = float((test/ 256) % 256) / 255.0;
-             float R = float(test / 256 / 256) / 255.0;
-             FragColor = vec4(R, G, B, A);
-             }
-             */
+            
+             //else if (flag == 1) { //Y
+                 if (tmp != float(ModelSize) && s_tmp != 0.0) {
+                     FragColor2 = C.a*(-tmp) + last_C.a*(s_tmp);//(vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
+                 }
+                 else FragColor2 = C.a;//vec4(SW.b, SW.b, SW.b, 1.0);
+             //}
+             //else { //D
+                 float dinter = depth;
+                 if (tmp != float(ModelSize) && s_tmp != 0.0) {
+                     dinter = (depth*(-tmp) + last_depth*(s_tmp) ) / (s_tmp - tmp);
+                 }
+                 /*
+                 int test = int(dinter * 256.0 * 256.0);
+                 float A = float(1.0) / 255.0;
+                 float B = float((test) % 256) / 255.0;
+                 float G = float((test/ 256) % 256) / 255.0;
+                 float R = float(test / 256 / 256) / 255.0;
+                 */
+                 FragColor1 = dinter;//vec4(R, G, B, A);
+             //}
+            
             weight_tmp = weight;
-            return ;
+            //return ;
         }
         //else if (tmp < 0.0 && s_tmp >= 0.0 && s_tmp < Mu) {
         //return ;

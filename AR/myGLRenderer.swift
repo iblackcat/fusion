@@ -179,6 +179,62 @@ class myGLRenderer: NSObject {
         return anUIImage
     }
     
+    func getFramebuffer3Images() -> (UIImage?, UIImage?, UIImage?) {
+        let byteLength = Int(_rtt._width * _rtt._height)
+        var bytes = [UInt32](repeating: 0, count: Int(byteLength))
+        var b8 = [UInt8](repeating: 0, count: Int(byteLength))
+        var anUIImage: UIImage! = nil
+        var anUIImage1: UIImage! = nil
+        var anUIImage2: UIImage! = nil
+        
+        glBindFramebuffer(GLenum(GL_FRAMEBUFFER), _rtt._framebuffer)
+        glReadBuffer(GLenum(GL_COLOR_ATTACHMENT0))
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(_rtt._format), GLenum(_rtt._type), &bytes)
+        
+        var gl_error = glGetError()
+        if gl_error == 0 {
+            anUIImage = getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror GL_COLOR_ATTACHMENT0:", gl_error)
+        }
+        
+        
+        glReadBuffer(GLenum(GL_COLOR_ATTACHMENT1))
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(GL_RED), GLenum(_rtt._type), &b8)
+        for i in 0..<byteLength {
+            let tmp:UInt32 = UInt32(b8[i])
+            bytes[i] = UInt32(0xff) << 24
+            bytes[i] |= (tmp << 16)
+            bytes[i] |= tmp << 8
+            bytes[i] |= tmp
+        }
+        gl_error = glGetError()
+        if gl_error == 0 {
+            anUIImage1 = getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror GL_COLOR_ATTACHMENT1:", gl_error)
+        }
+        
+        
+        glReadBuffer(GLenum(GL_COLOR_ATTACHMENT2))
+        glReadPixels(0, 0, _rtt._width, _rtt._height, GLenum(GL_RED), GLenum(_rtt._type), &b8)
+        for i in 0..<byteLength {
+            let tmp:UInt32 = UInt32(b8[i])
+            bytes[i] = UInt32(0xff) << 24
+            bytes[i] |= (tmp << 16)
+            bytes[i] |= tmp << 8
+            bytes[i] |= tmp
+        }
+        gl_error = glGetError()
+        if gl_error == 0 {
+            anUIImage2 = getUIImagefromRGBABuffer(src_buffer: &bytes, width: Int(_rtt._width), height: Int(_rtt._height))
+        } else {
+            print("glerror GL_COLOR_ATTACHMENT2:", gl_error)
+        }
+        
+        return (anUIImage, anUIImage1, anUIImage2)
+    }
+    
     func getFramebufferImageGray() -> UIImage? {
         let byteLength = Int(_rtt._width * _rtt._height)
         var bytes = [UInt8](repeating: 0, count: Int(byteLength))
