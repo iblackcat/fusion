@@ -22,7 +22,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                                 <subviews>
                                     <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BrB-h1-WRS">
-                                        <rect key="frame" x="0.0" y="0.0" width="160" height="90"/>
+                                        <rect key="frame" x="495" y="45" width="160" height="90"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </arscnView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7DC-4s-5dq">
@@ -61,6 +61,10 @@
                                         <rect key="frame" x="347" y="120" width="90" height="60"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </glkView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BQ3-a5-unZ">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="180"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
@@ -69,6 +73,7 @@
                     </stackView>
                     <connections>
                         <outlet property="DepthView" destination="ZfC-jW-975" id="9PJ-hF-cml"/>
+                        <outlet property="ImageView" destination="BQ3-a5-unZ" id="FuI-IK-VVx"/>
                         <outlet property="WeightView" destination="7DC-4s-5dq" id="C6h-Ov-fvQ"/>
                         <outlet property="glView" destination="eVm-xb-93h" id="Jzk-3e-m2a"/>
                         <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>

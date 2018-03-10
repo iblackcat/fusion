@@ -22,7 +22,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 3;
+int Mu = 6;
 
 float MAX_FLOAT = 10000000.0;
 
@@ -142,7 +142,8 @@ void main()
         }
         if ((tmp > 0.0 && s_tmp <= 0.0) && (tmp < float(Mu) && s_tmp > -float(Mu))) {// && tmp < Mu && s_tmp > -Mu)) { //|| (tmp < 0.0 && s_tmp >= 0.0 && s_tmp < Mu)) {
             
-            if (tmp < 0.0 || weight/2.0 < weight_tmp || weight < 5.0) {tmp = s_tmp; continue; }
+            if (tmp < 0.0 || weight/2.0 < weight_tmp || weight < 20.0)
+            {tmp = s_tmp; continue; }
             
             if (flag == 0) { } //I
                 
@@ -159,7 +160,7 @@ void main()
             
              //else if (flag == 1) { //Y
                  if (tmp != float(ModelSize) && s_tmp != 0.0) {
-                     FragColor2 = C.a*(-tmp) + last_C.a*(s_tmp);//(vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
+                     FragColor2 = (C.a*(-tmp) + last_C.a*(s_tmp))/(s_tmp-tmp);//(vec4(SW.b, SW.b, SW.b, 1.0)*(-tmp) + vec4(last_SW.b, last_SW.b, last_SW.b, 1.0)*(s_tmp)) / (s_tmp-tmp);
                  }
                  else FragColor2 = C.a;//vec4(SW.b, SW.b, SW.b, 1.0);
              //}

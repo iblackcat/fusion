@@ -72,19 +72,20 @@ class FusionBrain: NSObject{
         print("glerrorf0:", gl_error)
     }
     
-    func newFrame(image: UIImage, pose: CameraPose) -> (UIImage?, UIImage?){
+    func newFrame(image: UIImage, pose: CameraPose) -> (UIImage?, UIImage?, UIImage?){
         let frame = Frame.init(image: image, pose: pose)
         let frame2 = framePool.keyframeSelection(frame: frame)
         
         var outimage1: UIImage? = nil
         var outimage2: UIImage? = nil
+        var outimage3: UIImage? = nil
         
         if frame2 != nil {
             let (frame1_rec, frame2_rec, bl) = imageRect.imageRectification(frame1: frame, frame2: frame2!)
             let (tex3, tex4) = stereoMatch.disparityEstimation(tex1: frame1_rec?._texture, tex2: frame2_rec?._texture)
             let tex_depth = stereoMatch.depthEstimation(tex1: tex3, tex2: tex4, baseline: bl!)
             //outimage1 = stereoMatch.getDepthUIImage()
-            //(outimage1, outimage2) = imageRect.getUIImage()
+            //(outimage1, outimage2) = stereoMatch.getUIImage()
             tsdfModel.model_updating(tex_color: frame1_rec?._texture, tex_depth: tex_depth, pose: frame1_rec?._pose)
             tsdfModel.ray_tracing(pose: pose)
             //tsdfModel.ray_tracing(pose: frame1_rec?._pose)
@@ -92,7 +93,7 @@ class FusionBrain: NSObject{
                 outimage1 = tsdfModel.getModelUIImage()
             }*/
             //outimage1 = tsdfModel.getUIImage()
-            (outimage1, outimage2) = tsdfModel.getAllImage()
+            (outimage1, outimage2, outimage3) = tsdfModel.getAllImage()
         }
         
         frame_num = (frame_num+1) % 400
@@ -100,20 +101,23 @@ class FusionBrain: NSObject{
         //tsdfModel.model_updating()
         
         framePool.addFrame(newframe: frame)
-        return (outimage1, outimage2)
+        return (outimage1, outimage2, outimage3)
     }
     
-    func FusionDone() -> (UIImage?, UIImage?) {
+    func FusionDone() -> (UIImage?, UIImage?, UIImage?) {
         var outimage1: UIImage? = nil
         var outimage2: UIImage? = nil
+        var outimage3: UIImage? = nil
         
         last_R = rot_y * last_R
         let pose = CameraPose.init(A: g_intrinsics, R: last_R, t: float3(0,0,0.2*Cube.Scale))
         
         tsdfModel.ray_tracing(pose: pose, tag: false)
-        outimage2 = tsdfModel.getUIImage()
+        //outimage2 = tsdfModel.getUIImage()
+        (outimage1, outimage2, outimage3) = tsdfModel.getAllImage()
+        
         frame_num = (frame_num+1) % 100
         
-        return (outimage1, outimage2)
+        return (outimage1, outimage2, outimage3)
     }
 }

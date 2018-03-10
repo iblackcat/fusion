@@ -18,7 +18,7 @@ uniform sampler2D model1;
 
 int ModelSize = 256;
 int ModelTexSize = 4096;
-int Mu = 3;
+int Mu = 6;
 
 vec3 WorldCoord(float x, float y, float z) {
     //return vec3(0.0, 0.0, 0.0);
@@ -104,7 +104,7 @@ void main()
          */
         float si = (di - vP.z) * float(ModelSize) / edgeLength;
         vec4 ci = texture(tex_image, vec2(x, y));
-        float wi = 1.0;
+        float wi = 5.0;
         
         //di = D.r*8.0;
         //si = (di - 10.0);
@@ -131,7 +131,7 @@ void main()
             
             vec4 C = texture(model, st);
             W = C.a * 255.0;
-            if (W < 50.0) {
+            if (W < 30.0) {
                 C.r = (C.r * W + ci.r * wi) / (W + wi);
                 C.g = (C.g * W + ci.g * wi) / (W + wi);
                 C.b = (C.b * W + ci.b * wi) / (W + wi);

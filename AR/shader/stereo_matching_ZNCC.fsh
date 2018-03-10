@@ -173,5 +173,5 @@ void main()
 			FragColor = delta; //float2depth_rgba(delta);
 		}
 	}
-    FragColor = 0.0;
+    //FragColor = 0.0;
 }  

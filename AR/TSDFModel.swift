@@ -118,7 +118,7 @@ class TSDFModel {
                 axis_tmp = i
             }
         }
-        print("axis: ", axis_tmp)
+        //print("axis: ", axis_tmp)
         //print("R: ", R)
         //print("t: ", t)
         
@@ -218,10 +218,10 @@ class TSDFModel {
         return img
     }
     
-    func getAllImage() -> (UIImage?, UIImage?) {
+    func getAllImage() -> (UIImage?, UIImage?, UIImage?) {
         let (i1, i2, i3) = _renderer_raytracing.getFramebuffer3Images()
         
-        return (i1, i2)
+        return (i1, i2, i3)
     }
     
     func getModelUIImage() -> UIImage? {

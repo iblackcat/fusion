@@ -19,6 +19,7 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var DepthView: UIImageView!
+    @IBOutlet weak var ImageView: UIImageView!
     @IBOutlet weak var WeightView: UIImageView!
     @IBOutlet weak var glView: myGLKView!
     
@@ -83,29 +84,30 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
             let pose = CameraPose.init(A: g_intrinsics, R: viewx*test_pose.R.inverse, t: -viewx*test_pose.R.inverse*test_pose.t)
             
             if frameid % 25 == 0 {
-                let (img1, img2) = fusionBrain.newFrame(image: snapimage, pose: pose)
-                if img1 != nil && img2 != nil {
-                    DepthView.image = img1
-                    WeightView.image = img2
-                } else if img1 != nil {
-                    DepthView.image = img1
-                } else {
-                    print("???")
+                let (img1, img2, img3) = fusionBrain.newFrame(image: snapimage, pose: pose)
+                if img1 != nil {
+                    ImageView.image = img1
+                }
+                if img2 != nil {
+                    DepthView.image = img2
+                }
+                if img3 != nil {
+                    WeightView.image = img3
                 }
             }
             
-        } else if isFusionDone {
+        }
+        else if isFusionDone {
             if frameid % 5 == 0 {
-                let (img1, img2) = fusionBrain.FusionDone()
-                if img1 != nil && img2 != nil {
-                    DepthView.image = img1
-                    WeightView.image = img2
-                } else if img1 != nil {
-                    DepthView.image = img1
-                } else if img2 != nil {
-                    WeightView.image = img2
-                } else {
-                    print("???")
+                let (img1, img2, img3) = fusionBrain.FusionDone()
+                if img1 != nil {
+                    ImageView.image = img1
+                }
+                if img2 != nil {
+                    DepthView.image = img2
+                }
+                if img3 != nil {
+                    WeightView.image = img3
                 }
             }
         }
@@ -189,6 +191,7 @@ class ViewController: UIViewController, ARSessionDelegate, ARSCNViewDelegate {
         isFusionStart = false
         isFusionDone  = true
         fusionBrain.frame_num = 0
+        //sceneView.session.pause()
         /*
         let img: UIImage? = fusionBrain.tsdfModel.getModelUIImage()
         if img != nil {
